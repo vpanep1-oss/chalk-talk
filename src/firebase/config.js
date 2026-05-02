@@ -1,14 +1,14 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
-// Firebase configuration
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCox19TCXI4R8si5mLPSZWW8wTdeUp0Yz8",
-  authDomain: "chalk-talk-96138.firebaseapp.com",
-  projectId: "chalk-talk-96138",
-  storageBucket: "chalk-talk-96138.firebasestorage.app",
-  messagingSenderId: "415240128939",
-  appId: "1:415240128939:web:a10f0d6bed6de027636aee"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
