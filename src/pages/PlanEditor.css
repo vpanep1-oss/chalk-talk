@@ -1,0 +1,153 @@
+.plan-editor-page {
+  padding-bottom: calc(var(--spacing-xl) + 60px);
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 1rem;
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.plan-meta-header {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin-top: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.total-time {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.editor-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.editor-actions .btn {
+  flex: 1;
+}
+
+.drill-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.drill-block-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.drill-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.drill-info {
+  flex: 1;
+}
+
+.drill-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+}
+
+.drill-category {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: var(--surface-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+}
+
+.duration-input input {
+  width: 50px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0;
+}
+
+.duration-input span {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.drill-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: var(--spacing-sm) 0 0 0;
+}
+
+.drill-details {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+}
+
+.drill-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.875rem;
+}
+
+.drill-details p {
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.focus-areas-section {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.focus-areas-section h3 {
+  font-size: 1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.focus-tag {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--surface-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}

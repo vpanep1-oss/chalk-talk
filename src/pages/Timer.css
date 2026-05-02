@@ -1,0 +1,230 @@
+.timer-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 60px);
+  padding: var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-xl) + 60px);
+}
+
+.timer-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.timer-header .plan-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.practice-meta {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.timer-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-drill-info {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.current-drill-info .drill-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.current-drill-info .drill-category {
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timer-display {
+  margin-bottom: var(--spacing-xl);
+}
+
+.time-circle {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.time-text {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  z-index: 1;
+}
+
+.drill-description {
+  max-width: 500px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 auto var(--spacing-xl);
+}
+
+.timer-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.control-btn {
+  flex: 1;
+  padding: var(--spacing-lg);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.control-btn:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.control-btn.play-pause {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  font-size: 1.125rem;
+}
+
+.control-btn.play-pause.playing {
+  background: var(--warning);
+  border-color: var(--warning);
+}
+
+.drill-list-preview {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.drill-list-preview h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.drill-queue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.queue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+}
+
+.queue-name {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.queue-duration {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .time-circle {
+    width: 240px;
+    height: 240px;
+  }
+
+  .time-text {
+    font-size: 3.5rem;
+  }
+
+  .current-drill-info .drill-name {
+    font-size: 1.5rem;
+  }
+
+  .timer-controls {
+    flex-direction: column;
+  }
+
+  .control-btn {
+    width: 100%;
+  }
+}
+
+/* Landscape mode */
+@media (max-height: 600px) and (orientation: landscape) {
+  .timer-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--spacing-md);
+  }
+
+  .timer-header {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .timer-main {
+    grid-column: 1;
+  }
+
+  .drill-list-preview {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .timer-controls {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .time-circle {
+    width: 200px;
+    height: 200px;
+  }
+
+  .time-text {
+    font-size: 3rem;
+  }
+}
