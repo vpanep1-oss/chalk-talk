@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
+import { saveNote, getNotes, deleteNote, subscribeToNotes } from '../firebase/firestore';
 import './GameNotes.css';
 
 const GameNotes = () => {
   const [notes, setNotes] = useState([]);
   const [isAddingNote, setIsAddingNote] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('');
+  const [teamCode, setTeamCode] = useState(null);
   const [newNote, setNewNote] = useState({
     type: 'game',
     category: 'offense',
@@ -13,19 +17,46 @@ const GameNotes = () => {
   });
 
   useEffect(() => {
-    // Load notes from localStorage
-    const savedNotes = localStorage.getItem('practiceNotes');
-    if (savedNotes) {
-      setNotes(JSON.parse(savedNotes));
+    const savedTeamCode = localStorage.getItem('teamCode');
+    setTeamCode(savedTeamCode);
+
+    if (savedTeamCode) {
+      // Load notes from Firebase and subscribe to changes
+      loadNotesFromFirebase(savedTeamCode);
+
+      // Set up real-time sync
+      const unsubscribe = subscribeToNotes(savedTeamCode, (syncedNotes) => {
+        setNotes(syncedNotes);
+        setSyncStatus('✓ Synced');
+        setTimeout(() => setSyncStatus(''), 2000);
+      });
+
+      return () => unsubscribe();
+    } else {
+      // Fall back to localStorage
+      const savedNotes = localStorage.getItem('practiceNotes');
+      if (savedNotes) {
+        setNotes(JSON.parse(savedNotes));
+      }
     }
   }, []);
 
-  const saveNotes = (updatedNotes) => {
-    localStorage.setItem('practiceNotes', JSON.stringify(updatedNotes));
-    setNotes(updatedNotes);
+  const loadNotesFromFirebase = async (code) => {
+    try {
+      setIsSyncing(true);
+      const firebaseNotes = await getNotes(code);
+      setNotes(firebaseNotes);
+      setSyncStatus('✓ Loaded');
+      setTimeout(() => setSyncStatus(''), 2000);
+    } catch (error) {
+      console.error('Error loading notes:', error);
+      setSyncStatus('⚠ Error loading');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
-  const handleAddNote = () => {
+  const handleAddNote = async () => {
     if (!newNote.title || !newNote.content) {
       alert('Please fill in title and content');
       return;
@@ -37,24 +68,66 @@ const GameNotes = () => {
       timestamp: new Date().toISOString()
     };
 
-    const updatedNotes = [noteToAdd, ...notes];
-    saveNotes(updatedNotes);
+    try {
+      setIsSyncing(true);
+      setSyncStatus('Saving...');
 
-    // Reset form
-    setNewNote({
-      type: 'game',
-      category: 'offense',
-      title: '',
-      content: '',
-      date: new Date().toISOString().split('T')[0]
-    });
-    setIsAddingNote(false);
+      if (teamCode) {
+        // Save to Firebase
+        await saveNote(teamCode, noteToAdd);
+        setSyncStatus('✓ Saved');
+      } else {
+        // Fall back to localStorage
+        const updatedNotes = [noteToAdd, ...notes];
+        localStorage.setItem('practiceNotes', JSON.stringify(updatedNotes));
+        setNotes(updatedNotes);
+        setSyncStatus('✓ Saved locally');
+      }
+
+      setTimeout(() => setSyncStatus(''), 2000);
+
+      // Reset form
+      setNewNote({
+        type: 'game',
+        category: 'offense',
+        title: '',
+        content: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      setIsAddingNote(false);
+    } catch (error) {
+      console.error('Error saving note:', error);
+      setSyncStatus('⚠ Save failed');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
-  const handleDeleteNote = (id) => {
-    if (confirm('Delete this note?')) {
-      const updatedNotes = notes.filter(note => note.id !== id);
-      saveNotes(updatedNotes);
+  const handleDeleteNote = async (id) => {
+    if (!confirm('Delete this note?')) return;
+
+    try {
+      setIsSyncing(true);
+      setSyncStatus('Deleting...');
+
+      if (teamCode) {
+        // Delete from Firebase
+        await deleteNote(teamCode, id);
+        setSyncStatus('✓ Deleted');
+      } else {
+        // Delete from localStorage
+        const updatedNotes = notes.filter(note => note.id !== id);
+        localStorage.setItem('practiceNotes', JSON.stringify(updatedNotes));
+        setNotes(updatedNotes);
+        setSyncStatus('✓ Deleted locally');
+      }
+
+      setTimeout(() => setSyncStatus(''), 2000);
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      setSyncStatus('⚠ Delete failed');
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -79,13 +152,25 @@ const GameNotes = () => {
   return (
     <div className="page game-notes-page">
       <div className="page-header">
-        <h1 className="page-title">Notes</h1>
-        <p className="page-subtitle">Track game observations and practice insights</p>
+        <div className="header-with-sync">
+          <div>
+            <h1 className="page-title">Notes</h1>
+            <p className="page-subtitle">
+              {teamCode
+                ? `Syncing with team: ${teamCode}`
+                : 'Track game observations and practice insights'}
+            </p>
+          </div>
+          {syncStatus && (
+            <div className="sync-indicator">{syncStatus}</div>
+          )}
+        </div>
       </div>
 
       <button
         className="btn btn-primary add-note-btn"
         onClick={() => setIsAddingNote(!isAddingNote)}
+        disabled={isSyncing}
       >
         {isAddingNote ? '✕ Cancel' : '+ New Note'}
       </button>

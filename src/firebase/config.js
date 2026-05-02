@@ -1,16 +1,14 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 
 // Firebase configuration
-// TODO: Replace with your actual Firebase project credentials from Firebase Console
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCox19TCXI4R8si5mLPSZWW8wTdeUp0Yz8",
+  authDomain: "chalk-talk-96138.firebaseapp.com",
+  projectId: "chalk-talk-96138",
+  storageBucket: "chalk-talk-96138.firebasestorage.app",
+  messagingSenderId: "415240128939",
+  appId: "1:415240128939:web:a10f0d6bed6de027636aee"
 };
 
 // Initialize Firebase
@@ -19,7 +17,17 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 export const db = getFirestore(app);
 
-// Initialize Auth (for team coach code authentication)
-export const auth = getAuth(app);
+// Enable offline persistence
+try {
+  enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.warn('Multiple tabs open, persistence enabled in first tab only');
+    } else if (err.code === 'unimplemented') {
+      console.warn('Browser does not support offline persistence');
+    }
+  });
+} catch (err) {
+  console.error('Error enabling persistence:', err);
+}
 
 export default app;
