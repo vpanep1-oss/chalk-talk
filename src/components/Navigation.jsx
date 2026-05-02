@@ -4,7 +4,7 @@ import './Navigation.css';
 const Navigation = () => {
   return (
     <nav className="navigation">
-      <NavLink to="/" className="nav-item">
+      <NavLink to="/" className="nav-item" end>
         <span className="nav-icon">🏠</span>
         <span className="nav-label">Home</span>
       </NavLink>
@@ -23,6 +23,10 @@ const Navigation = () => {
       <NavLink to="/notes" className="nav-item">
         <span className="nav-icon">📝</span>
         <span className="nav-label">Notes</span>
+      </NavLink>
+      <NavLink to="/settings" className="nav-item">
+        <span className="nav-icon">⚙️</span>
+        <span className="nav-label">Settings</span>
       </NavLink>
     </nav>
   );
