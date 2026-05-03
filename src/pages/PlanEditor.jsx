@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPracticePlanById } from '../data/practicePlans';
 import { getDrillById } from '../data/drillLibrary';
+import DrillSelectorModal from '../components/DrillSelectorModal';
 import './PlanEditor.css';
 
 const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
@@ -9,6 +10,12 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
   const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: null, // 'swap' or 'add'
+    blockIndex: null,
+    initialCategory: 'all'
+  });
 
   useEffect(() => {
     if (planId) {
@@ -76,6 +83,78 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
   const handleStartPractice = () => {
     setCurrentPlan(plan);
     navigate('/timer');
+  };
+
+  const handleSwapDrill = (blockIndex) => {
+    const currentDrill = getDrillById(plan.drillBlocks[blockIndex].drillId);
+    setModalState({
+      isOpen: true,
+      mode: 'swap',
+      blockIndex,
+      initialCategory: currentDrill?.category || 'all'
+    });
+  };
+
+  const handleAddDrill = () => {
+    setModalState({
+      isOpen: true,
+      mode: 'add',
+      blockIndex: null,
+      initialCategory: 'all'
+    });
+  };
+
+  const handleDrillSelected = (selectedDrill) => {
+    if (modalState.mode === 'swap') {
+      // Replace drill at blockIndex, keep same duration
+      const updatedPlan = { ...plan };
+      updatedPlan.drillBlocks[modalState.blockIndex] = {
+        drillId: selectedDrill.id,
+        duration: updatedPlan.drillBlocks[modalState.blockIndex].duration
+      };
+      setPlan(updatedPlan);
+      setIsEditing(true);
+    } else if (modalState.mode === 'add') {
+      // Add new drill and scale down existing drills
+      const currentTotal = getTotalTime();
+      const newDrillDuration = Math.min(selectedDrill.duration, 10); // Cap at 10 min for new drills
+      const targetTotal = currentTotal; // Keep same total time
+
+      const updatedPlan = { ...plan };
+
+      // Scale down existing drills proportionally
+      if (currentTotal > 0) {
+        const remainingTime = targetTotal - newDrillDuration;
+        const ratio = remainingTime / currentTotal;
+
+        updatedPlan.drillBlocks = updatedPlan.drillBlocks.map(block => ({
+          ...block,
+          duration: Math.max(1, Math.round(block.duration * ratio))
+        }));
+
+        // Fine-tune to hit exact target
+        const scaledTotal = updatedPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0);
+        const diff = remainingTime - scaledTotal;
+
+        if (diff !== 0 && updatedPlan.drillBlocks.length > 0) {
+          const longestIndex = updatedPlan.drillBlocks.reduce((maxIdx, block, idx, arr) =>
+            block.duration > arr[maxIdx].duration ? idx : maxIdx, 0);
+          updatedPlan.drillBlocks[longestIndex].duration = Math.max(1,
+            updatedPlan.drillBlocks[longestIndex].duration + diff);
+        }
+      }
+
+      // Add the new drill
+      updatedPlan.drillBlocks.push({
+        drillId: selectedDrill.id,
+        duration: newDrillDuration
+      });
+
+      setPlan(updatedPlan);
+      setIsEditing(true);
+    }
+
+    setModalState({ isOpen: false, mode: null, blockIndex: null, initialCategory: 'all' });
   };
 
   const getTotalTime = () => {
@@ -147,6 +226,12 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
         )}
       </div>
 
+      <div className="add-drill-section">
+        <button className="btn btn-outline" onClick={handleAddDrill}>
+          ➕ Add Drill
+        </button>
+      </div>
+
       <div className="drill-blocks">
         {plan.drillBlocks.map((block, index) => {
           const drill = getDrillById(block.drillId);
@@ -170,6 +255,13 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
                     />
                     <span>min</span>
                   </div>
+                  <button
+                    className="swap-drill-btn"
+                    onClick={() => handleSwapDrill(index)}
+                    title="Swap drill"
+                  >
+                    🔄
+                  </button>
                   <button
                     className="remove-drill-btn"
                     onClick={() => handleRemoveDrill(index)}
@@ -201,6 +293,13 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
           ))}
         </div>
       </div>
+
+      <DrillSelectorModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ isOpen: false, mode: null, blockIndex: null, initialCategory: 'all' })}
+        onSelectDrill={handleDrillSelected}
+        initialCategory={modalState.initialCategory}
+      />
     </div>
   );
 };
