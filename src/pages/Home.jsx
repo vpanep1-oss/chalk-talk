@@ -54,31 +54,6 @@ const Home = ({ teamCode }) => {
     return practicePlans.find(plan => plan.level === currentLevel) || practicePlans[0];
   };
 
-  const getSuggestedPlan = (currentPractice, notes) => {
-    if (!practicePlans.length) return null;
-
-    const lastPracticeNote = [...notes]
-      .filter(note => note.type === 'practice')
-      .sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date))[0];
-
-    const currentLevel = currentPractice?.plan?.level || 'Beginner';
-
-    if (lastPracticeNote && lastPracticeNote.category) {
-      const focusMatch = practicePlans.find(plan =>
-        plan.level === currentLevel && plan.focusAreas.some(area => area.toLowerCase().includes(lastPracticeNote.category.toLowerCase()))
-      );
-      if (focusMatch) return focusMatch;
-    }
-
-    if (currentPractice?.plan) {
-      const currentIndex = practicePlans.findIndex(plan => plan.id === currentPractice.plan.id);
-      const nextPlan = practicePlans.slice(currentIndex + 1).find(plan => plan.level === currentPractice.plan.level);
-      if (nextPlan) return nextPlan;
-    }
-
-    return practicePlans.find(plan => plan.level === currentLevel) || practicePlans[0];
-  };
-
   return (
     <div className="page home-page">
       <div className="home-header">
