@@ -1,0 +1,27 @@
+.practice-schedule-page .page-header {
+  margin-bottom: 24px;
+}
+.schedule-list {
+  display: grid;
+  gap: 18px;
+}
+.schedule-card {
+  padding: 20px;
+}
+.schedule-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+}
+.schedule-date {
+  min-width: 140px;
+  text-align: right;
+  color: var(--text-muted);
+}
+.schedule-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}

@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPracticePlanById } from '../data/practicePlans';
 import { getDrillById } from '../data/drillLibrary';
+import { savePracticeScheduleEntry } from '../firebase/firestore';
 import DrillSelectorModal from '../components/DrillSelectorModal';
 import './PlanEditor.css';
 
-const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
+const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   const { planId } = useParams();
   const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
+  const [practiceDate, setPracticeDate] = useState(new Date().toISOString().split('T')[0]);
   const [isEditing, setIsEditing] = useState(false);
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -19,19 +21,21 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
 
   useEffect(() => {
     if (planId) {
-      const loadedPlan = currentPlan && currentPlan.id === planId
-        ? currentPlan
+      const loadedPlan = currentPractice?.plan?.id === planId
+        ? currentPractice.plan
         : getPracticePlanById(planId);
 
       if (loadedPlan) {
         setPlan(JSON.parse(JSON.stringify(loadedPlan))); // Deep clone
+        setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
+        setIsEditing(false);
       }
     }
-  }, [planId, currentPlan]);
+  }, [planId, currentPractice]);
 
   const handleDurationChange = (blockIndex, newDuration) => {
     const updatedPlan = { ...plan };
-    updatedPlan.drillBlocks[blockIndex].duration = parseInt(newDuration);
+    updatedPlan.drillBlocks[blockIndex].duration = parseInt(newDuration, 10);
     setPlan(updatedPlan);
     setIsEditing(true);
   };
@@ -57,12 +61,10 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
       duration: Math.max(1, Math.round(block.duration * ratio))
     }));
 
-    // Fine-tune to hit exact target
     const newTotal = updatedPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0);
     const diff = targetMinutes - newTotal;
 
     if (diff !== 0 && updatedPlan.drillBlocks.length > 0) {
-      // Add/subtract difference from longest drill
       const longestIndex = updatedPlan.drillBlocks.reduce((maxIdx, block, idx, arr) =>
         block.duration > arr[maxIdx].duration ? idx : maxIdx, 0);
       updatedPlan.drillBlocks[longestIndex].duration = Math.max(1,
@@ -73,16 +75,42 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
     setIsEditing(true);
   };
 
-  const handleSavePlan = () => {
-    setCurrentPlan(plan);
-    // TODO: Save to Firebase
+  const handleSaveAsCurrentPractice = () => {
+    saveCurrentPractice({ plan, date: practiceDate });
     setIsEditing(false);
-    alert('Plan saved!');
+    alert(`Plan set as current practice for ${practiceDate}`);
   };
 
   const handleStartPractice = () => {
-    setCurrentPlan(plan);
+    saveCurrentPractice({ plan, date: practiceDate });
     navigate('/timer');
+  };
+
+  const handleSchedulePractice = async () => {
+    const entry = {
+      id: `${plan.id}_${practiceDate}`,
+      planId: plan.id,
+      planName: plan.name,
+      level: plan.level,
+      duration: getTotalTime(),
+      date: practiceDate
+    };
+
+    if (teamCode) {
+      try {
+        await savePracticeScheduleEntry(teamCode, entry);
+        alert(`Practice plan scheduled for ${practiceDate} and synced to your team.`);
+      } catch (error) {
+        console.error(error);
+        alert('Unable to save schedule to Firestore. Your plan was not scheduled.');
+      }
+    } else {
+      const scheduleKey = 'practiceSchedule';
+      const schedule = JSON.parse(localStorage.getItem(scheduleKey) || '[]');
+      const updatedSchedule = [...schedule.filter(item => item.planId !== plan.id || item.date !== practiceDate), entry];
+      localStorage.setItem(scheduleKey, JSON.stringify(updatedSchedule));
+      alert(`Practice plan scheduled for ${practiceDate}`);
+    }
   };
 
   const handleSwapDrill = (blockIndex) => {
@@ -106,7 +134,6 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
 
   const handleDrillSelected = (selectedDrill) => {
     if (modalState.mode === 'swap') {
-      // Replace drill at blockIndex, keep same duration
       const updatedPlan = { ...plan };
       updatedPlan.drillBlocks[modalState.blockIndex] = {
         drillId: selectedDrill.id,
@@ -115,14 +142,11 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
       setPlan(updatedPlan);
       setIsEditing(true);
     } else if (modalState.mode === 'add') {
-      // Add new drill and scale down existing drills
       const currentTotal = getTotalTime();
-      const newDrillDuration = Math.min(selectedDrill.duration, 10); // Cap at 10 min for new drills
-      const targetTotal = currentTotal; // Keep same total time
-
+      const newDrillDuration = Math.min(selectedDrill.duration, 10);
+      const targetTotal = currentTotal;
       const updatedPlan = { ...plan };
 
-      // Scale down existing drills proportionally
       if (currentTotal > 0) {
         const remainingTime = targetTotal - newDrillDuration;
         const ratio = remainingTime / currentTotal;
@@ -132,7 +156,6 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
           duration: Math.max(1, Math.round(block.duration * ratio))
         }));
 
-        // Fine-tune to hit exact target
         const scaledTotal = updatedPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0);
         const diff = remainingTime - scaledTotal;
 
@@ -144,7 +167,6 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
         }
       }
 
-      // Add the new drill
       updatedPlan.drillBlocks.push({
         drillId: selectedDrill.id,
         duration: newDrillDuration
@@ -188,6 +210,16 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
         </div>
       </div>
 
+      <div className="practice-date-section">
+        <label htmlFor="practice-date">Practice Date</label>
+        <input
+          id="practice-date"
+          type="date"
+          value={practiceDate}
+          onChange={(e) => setPracticeDate(e.target.value)}
+        />
+      </div>
+
       <div className="time-adjustment-section">
         <h3>Adjust Practice Duration</h3>
         <div className="time-buttons">
@@ -219,11 +251,12 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
         <button className="btn btn-primary" onClick={handleStartPractice}>
           ▶️ Start Practice
         </button>
-        {isEditing && (
-          <button className="btn btn-secondary" onClick={handleSavePlan}>
-            💾 Save Changes
-          </button>
-        )}
+        <button className="btn btn-secondary" onClick={handleSaveAsCurrentPractice}>
+          💾 Set as Current Practice
+        </button>
+        <button className="btn btn-outline" onClick={handleSchedulePractice}>
+          🗓️ Schedule for {practiceDate}
+        </button>
       </div>
 
       <div className="add-drill-section">
@@ -231,6 +264,80 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
           ➕ Add Drill
         </button>
       </div>
+
+      <div className="drill-blocks">
+        {plan.drillBlocks.map((block, index) => {
+          const drill = getDrillById(block.drillId);
+          return (
+            <div key={index} className="drill-block-card">
+              <div className="drill-block-header">
+                <div className="drill-info">
+                  <h3 className="drill-name">
+                    {index + 1}. {drill?.name || 'Unknown Drill'}
+                  </h3>
+                  <p className="drill-category">{drill?.category}</p>
+                </div>
+                <div className="drill-controls">
+                  <div className="duration-input">
+                    <input
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={block.duration}
+                      onChange={(e) => handleDurationChange(index, e.target.value)}
+                    />
+                    <span>min</span>
+                  </div>
+                  <button
+                    className="swap-drill-btn"
+                    onClick={() => handleSwapDrill(index)}
+                    title="Swap drill"
+                  >
+                    🔄
+                  </button>
+                  <button
+                    className="remove-drill-btn"
+                    onClick={() => handleRemoveDrill(index)}
+                    title="Remove drill"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              {drill?.description && (
+                <p className="drill-description">{drill.description}</p>
+              )}
+              {drill?.details && (
+                <details className="drill-details">
+                  <summary>View Details</summary>
+                  <p>{drill.details}</p>
+                </details>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="focus-areas-section">
+        <h3>Focus Areas</h3>
+        <div className="focus-tags">
+          {plan.focusAreas.map((area, idx) => (
+            <span key={idx} className="focus-tag">{area}</span>
+          ))}
+        </div>
+      </div>
+
+      <DrillSelectorModal
+        isOpen={modalState.isOpen}
+        onClose={() => setModalState({ isOpen: false, mode: null, blockIndex: null, initialCategory: 'all' })}
+        onSelectDrill={handleDrillSelected}
+        initialCategory={modalState.initialCategory}
+      />
+    </div>
+  );
+};
+
+export default PlanEditor;
 
       <div className="drill-blocks">
         {plan.drillBlocks.map((block, index) => {

@@ -1,0 +1,37 @@
+.current-practice-page .page-header {
+  margin-bottom: 24px;
+}
+.current-practice-card {
+  padding: 24px;
+  display: grid;
+  gap: 20px;
+}
+.practice-summary {
+  display: grid;
+  gap: 16px;
+}
+.practice-summary .text-muted {
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 8px;
+}
+.practice-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--text-muted);
+}
+.current-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.schedule-link-row {
+  margin-top: 24px;
+}
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}

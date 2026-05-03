@@ -1,20 +1,35 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDrillById } from '../data/drillLibrary';
+import { savePracticeSession } from '../firebase/firestore';
 import './Timer.css';
 
-const Timer = ({ currentPlan }) => {
+const Timer = ({ currentPractice, teamCode }) => {
   const navigate = useNavigate();
   const [isRunning, setIsRunning] = useState(false);
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [totalElapsed, setTotalElapsed] = useState(0);
+  const [practiceComplete, setPracticeComplete] = useState(false);
+  const [sessionSaved, setSessionSaved] = useState(false);
+  const [completionNote, setCompletionNote] = useState('');
+  const [sessionSaving, setSessionSaving] = useState(false);
+  const [sessionId] = useState(`session_${Date.now()}`);
   const timerRef = useRef(null);
   const audioContextRef = useRef(null);
 
+  const currentPlan = currentPractice?.plan;
+
   useEffect(() => {
     if (currentPlan && currentPlan.drillBlocks.length > 0) {
+      setCurrentDrillIndex(0);
+      setTotalElapsed(0);
       setTimeRemaining(currentPlan.drillBlocks[0].duration * 60);
+      setIsRunning(false);
+      setPracticeComplete(false);
+      setSessionSaved(false);
+      setCompletionNote('');
+      setSessionSaving(false);
     }
   }, [currentPlan]);
 
@@ -79,15 +94,54 @@ const Timer = ({ currentPlan }) => {
     triggerHaptic();
 
     if (currentDrillIndex < currentPlan.drillBlocks.length - 1) {
-      // Move to next drill
       const nextIndex = currentDrillIndex + 1;
       setCurrentDrillIndex(nextIndex);
       setTimeRemaining(currentPlan.drillBlocks[nextIndex].duration * 60);
     } else {
-      // Practice complete
       setIsRunning(false);
+      setPracticeComplete(true);
       playSound(1200, 1000);
       alert('Practice Complete! Great work! 🏀');
+      saveSession();
+    }
+  };
+
+  const saveSession = async () => {
+    if (sessionSaved || !currentPlan) return;
+
+    const session = {
+      id: sessionId,
+      planId: currentPlan.id,
+      planName: currentPlan.name,
+      date: currentPractice?.date || new Date().toISOString().split('T')[0],
+      durationMinutes: currentPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0),
+      completedAt: new Date().toISOString(),
+      drills: currentPlan.drillBlocks.map(block => ({
+        drillId: block.drillId,
+        duration: block.duration
+      })),
+      note: completionNote,
+      totalDrills: currentPlan.drillBlocks.length,
+      teamCode: teamCode || null
+    };
+
+    setSessionSaving(true);
+
+    try {
+      if (teamCode) {
+        await savePracticeSession(teamCode, session);
+      } else {
+        const historyKey = 'practiceHistory';
+        const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+        localStorage.setItem(historyKey, JSON.stringify([session, ...history]));
+      }
+      setSessionSaved(true);
+      alert('Practice session saved!');
+    } catch (error) {
+      console.error('Unable to save practice history', error);
+      alert('Unable to save practice history. Please try again.');
+    } finally {
+      setSessionSaving(false);
     }
   };
 
@@ -122,6 +176,11 @@ const Timer = ({ currentPlan }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const formatPracticeDate = (dateString) => {
+    if (!dateString) return 'No date set';
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   const formatTotalTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -144,9 +203,9 @@ const Timer = ({ currentPlan }) => {
         <div className="empty-state">
           <div className="empty-state-icon">⏱️</div>
           <h2 className="empty-state-title">No practice plan selected</h2>
-          <p className="empty-state-text">Select a practice plan to use the timer</p>
-          <button className="btn btn-primary" onClick={() => navigate('/plans')}>
-            Browse Plans
+          <p className="empty-state-text">Choose a confirmed practice plan from Current Practice or Plan Editor.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/current')}>
+            Go to Current Practice
           </button>
         </div>
       </div>
@@ -160,7 +219,7 @@ const Timer = ({ currentPlan }) => {
       <div className="timer-header">
         <h2 className="plan-name">{currentPlan.name}</h2>
         <div className="practice-meta">
-          <span>Drill {currentDrillIndex + 1} of {currentPlan.drillBlocks.length}</span>
+          <span>{formatPracticeDate(currentPractice.date)}</span>
           <span>Total: {formatTotalTime(totalElapsed)}</span>
         </div>
       </div>
@@ -228,6 +287,32 @@ const Timer = ({ currentPlan }) => {
           Next ⏭️
         </button>
       </div>
+
+      {practiceComplete && (
+        <div className="practice-summary-card card">
+          <h3>Practice Complete</h3>
+          <p>Save this session to your practice history and add notes while it's fresh.</p>
+          <textarea
+            className="practice-note-input"
+            rows="4"
+            placeholder="Add a quick summary or coaching note"
+            value={completionNote}
+            onChange={(e) => setCompletionNote(e.target.value)}
+          />
+          <div className="practice-summary-actions">
+            <button
+              className="btn btn-primary"
+              onClick={saveSession}
+              disabled={sessionSaved || sessionSaving}
+            >
+              {sessionSaved ? 'Saved' : sessionSaving ? 'Saving...' : 'Save Session'}
+            </button>
+            {sessionSaved && (
+              <span className="saved-indicator">✓ Saved to history</span>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="drill-list-preview">
         <h3>Up Next</h3>

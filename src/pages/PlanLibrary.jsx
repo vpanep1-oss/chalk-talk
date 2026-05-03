@@ -4,7 +4,7 @@ import { practicePlans } from '../data/practicePlans';
 import { SKILL_LEVELS } from '../data/drillLibrary';
 import './PlanLibrary.css';
 
-const PlanLibrary = ({ onSelectPlan }) => {
+const PlanLibrary = () => {
   const navigate = useNavigate();
   const [selectedLevel, setSelectedLevel] = useState('all');
 
@@ -19,7 +19,6 @@ const PlanLibrary = ({ onSelectPlan }) => {
   };
 
   const handlePlanClick = (plan) => {
-    onSelectPlan(plan);
     navigate(`/plan/${plan.id}`);
   };
 

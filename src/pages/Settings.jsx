@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { syncLocalDataToFirestore } from '../firebase/firestore';
 import './Settings.css';
 
 const Settings = ({ teamCode, setTeamCode }) => {
@@ -9,12 +10,23 @@ const Settings = ({ teamCode, setTeamCode }) => {
   const [hapticsEnabled, setHapticsEnabled] = useState(
     localStorage.getItem('hapticsEnabled') !== 'false'
   );
+  const [isSyncing, setIsSyncing] = useState(false);
 
-  const handleSaveTeamCode = () => {
+  const handleSaveTeamCode = async () => {
     if (inputTeamCode.trim()) {
       localStorage.setItem('teamCode', inputTeamCode);
       setTeamCode(inputTeamCode);
-      alert('Team code saved! Your data will sync across devices with this code.');
+      setIsSyncing(true);
+
+      try {
+        await syncLocalDataToFirestore(inputTeamCode);
+        alert('Team code saved and local data synced to Firestore.');
+      } catch (error) {
+        console.error(error);
+        alert('Team code saved, but syncing failed.');
+      } finally {
+        setIsSyncing(false);
+      }
     }
   };
 
@@ -70,8 +82,8 @@ const Settings = ({ teamCode, setTeamCode }) => {
             value={inputTeamCode}
             onChange={(e) => setInputTeamCode(e.target.value)}
           />
-          <button className="btn btn-primary" onClick={handleSaveTeamCode}>
-            Save Code
+          <button className="btn btn-primary" onClick={handleSaveTeamCode} disabled={isSyncing}>
+            {isSyncing ? 'Syncing...' : 'Save Code'}
           </button>
         </div>
 

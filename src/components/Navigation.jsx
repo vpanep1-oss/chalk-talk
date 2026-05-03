@@ -12,13 +12,17 @@ const Navigation = () => {
         <span className="nav-icon">📋</span>
         <span className="nav-label">Plans</span>
       </NavLink>
+      <NavLink to="/current" className="nav-item">
+        <span className="nav-icon">🏃</span>
+        <span className="nav-label">Current</span>
+      </NavLink>
       <NavLink to="/drills" className="nav-item">
         <span className="nav-icon">🏀</span>
         <span className="nav-label">Drills</span>
       </NavLink>
       <NavLink to="/timer" className="nav-item">
-        <span className="nav-icon">⏱️</span>
-        <span className="nav-label">Timer</span>
+        <span className="nav-icon">🏃</span>
+        <span className="nav-label">Live</span>
       </NavLink>
       <NavLink to="/notes" className="nav-item">
         <span className="nav-icon">📝</span>

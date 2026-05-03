@@ -164,6 +164,63 @@ export const subscribeToNotes = (teamCode, callback) => {
 };
 
 // ==========================================
+// PRACTICE SCHEDULE
+// ==========================================
+
+/**
+ * Save a scheduled practice entry
+ * @param {string} teamCode
+ * @param {object} entry
+ */
+export const savePracticeScheduleEntry = async (teamCode, entry) => {
+  if (!teamCode) {
+    throw new Error('Team code is required');
+  }
+
+  const scheduleRef = doc(db, 'teams', teamCode, 'practiceSchedule', entry.id.toString());
+  await setDoc(scheduleRef, {
+    ...entry,
+    updatedAt: serverTimestamp(),
+    date: entry.date
+  });
+};
+
+export const getPracticeSchedule = async (teamCode) => {
+  if (!teamCode) return [];
+
+  const scheduleRef = collection(db, 'teams', teamCode, 'practiceSchedule');
+  const q = query(scheduleRef, orderBy('date', 'asc'));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+};
+
+export const deletePracticeScheduleEntry = async (teamCode, entryId) => {
+  if (!teamCode || !entryId) return;
+
+  const scheduleRef = doc(db, 'teams', teamCode, 'practiceSchedule', entryId.toString());
+  await deleteDoc(scheduleRef);
+};
+
+export const subscribeToPracticeSchedule = (teamCode, callback) => {
+  if (!teamCode) return () => {};
+
+  const scheduleRef = collection(db, 'teams', teamCode, 'practiceSchedule');
+  const q = query(scheduleRef, orderBy('date', 'asc'));
+
+  return onSnapshot(q, (snapshot) => {
+    const schedule = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(schedule);
+  });
+};
+
+// ==========================================
 // TEAM SETTINGS
 // ==========================================
 
@@ -344,7 +401,25 @@ export const syncLocalDataToFirestore = async (teamCode) => {
       console.log(`Synced ${notes.length} notes to Firestore`);
     }
 
-    // Add more sync logic here for other data types as needed
+    // Sync schedule entries
+    const localSchedule = localStorage.getItem('practiceSchedule');
+    if (localSchedule) {
+      const scheduleEntries = JSON.parse(localSchedule);
+      for (const entry of scheduleEntries) {
+        await savePracticeScheduleEntry(teamCode, entry);
+      }
+      console.log(`Synced ${scheduleEntries.length} schedule entries to Firestore`);
+    }
+
+    // Sync practice history
+    const localHistory = localStorage.getItem('practiceHistory');
+    if (localHistory) {
+      const sessions = JSON.parse(localHistory);
+      for (const session of sessions) {
+        await savePracticeSession(teamCode, session);
+      }
+      console.log(`Synced ${sessions.length} practice history sessions to Firestore`);
+    }
   } catch (error) {
     console.error('Error syncing local data:', error);
   }

@@ -1,0 +1,25 @@
+.practice-history-page .page-header {
+  margin-bottom: 24px;
+}
+.history-list {
+  display: grid;
+  gap: 18px;
+}
+.history-card {
+  padding: 20px;
+}
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+.history-date {
+  color: var(--text-muted);
+  min-width: 120px;
+  text-align: right;
+}
+.history-note {
+  margin-top: 12px;
+  color: var(--text-secondary);
+}
