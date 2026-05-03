@@ -29,6 +29,43 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
     setIsEditing(true);
   };
 
+  const handleRemoveDrill = (blockIndex) => {
+    if (confirm('Remove this drill from the practice plan?')) {
+      const updatedPlan = { ...plan };
+      updatedPlan.drillBlocks.splice(blockIndex, 1);
+      setPlan(updatedPlan);
+      setIsEditing(true);
+    }
+  };
+
+  const handleAdjustToTime = (targetMinutes) => {
+    const currentTotal = getTotalTime();
+    if (currentTotal === 0 || currentTotal === targetMinutes) return;
+
+    const ratio = targetMinutes / currentTotal;
+    const updatedPlan = { ...plan };
+
+    updatedPlan.drillBlocks = updatedPlan.drillBlocks.map(block => ({
+      ...block,
+      duration: Math.max(1, Math.round(block.duration * ratio))
+    }));
+
+    // Fine-tune to hit exact target
+    const newTotal = updatedPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0);
+    const diff = targetMinutes - newTotal;
+
+    if (diff !== 0 && updatedPlan.drillBlocks.length > 0) {
+      // Add/subtract difference from longest drill
+      const longestIndex = updatedPlan.drillBlocks.reduce((maxIdx, block, idx, arr) =>
+        block.duration > arr[maxIdx].duration ? idx : maxIdx, 0);
+      updatedPlan.drillBlocks[longestIndex].duration = Math.max(1,
+        updatedPlan.drillBlocks[longestIndex].duration + diff);
+    }
+
+    setPlan(updatedPlan);
+    setIsEditing(true);
+  };
+
   const handleSavePlan = () => {
     setCurrentPlan(plan);
     // TODO: Save to Firebase
@@ -72,6 +109,33 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
         </div>
       </div>
 
+      <div className="time-adjustment-section">
+        <h3>Adjust Practice Duration</h3>
+        <div className="time-buttons">
+          <button
+            className={`time-btn ${getTotalTime() === 60 ? 'active' : ''}`}
+            onClick={() => handleAdjustToTime(60)}
+          >
+            60 min
+          </button>
+          <button
+            className={`time-btn ${getTotalTime() === 75 ? 'active' : ''}`}
+            onClick={() => handleAdjustToTime(75)}
+          >
+            75 min
+          </button>
+          <button
+            className={`time-btn ${getTotalTime() === 90 ? 'active' : ''}`}
+            onClick={() => handleAdjustToTime(90)}
+          >
+            90 min
+          </button>
+        </div>
+        <p className="time-adjustment-hint">
+          Click to proportionally adjust all drill times to fit the target duration
+        </p>
+      </div>
+
       <div className="editor-actions">
         <button className="btn btn-primary" onClick={handleStartPractice}>
           ▶️ Start Practice
@@ -90,18 +154,29 @@ const PlanEditor = ({ currentPlan, setCurrentPlan }) => {
             <div key={index} className="drill-block-card">
               <div className="drill-block-header">
                 <div className="drill-info">
-                  <h3 className="drill-name">{drill?.name || 'Unknown Drill'}</h3>
+                  <h3 className="drill-name">
+                    {index + 1}. {drill?.name || 'Unknown Drill'}
+                  </h3>
                   <p className="drill-category">{drill?.category}</p>
                 </div>
-                <div className="duration-input">
-                  <input
-                    type="number"
-                    min="1"
-                    max="90"
-                    value={block.duration}
-                    onChange={(e) => handleDurationChange(index, e.target.value)}
-                  />
-                  <span>min</span>
+                <div className="drill-controls">
+                  <div className="duration-input">
+                    <input
+                      type="number"
+                      min="1"
+                      max="90"
+                      value={block.duration}
+                      onChange={(e) => handleDurationChange(index, e.target.value)}
+                    />
+                    <span>min</span>
+                  </div>
+                  <button
+                    className="remove-drill-btn"
+                    onClick={() => handleRemoveDrill(index)}
+                    title="Remove drill"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
               {drill?.description && (
