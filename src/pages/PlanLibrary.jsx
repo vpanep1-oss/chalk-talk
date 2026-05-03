@@ -1,23 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { practicePlans, getPracticePlansByLevel, getPracticePlansByDuration } from '../data/practicePlans';
+import { practicePlans } from '../data/practicePlans';
 import { SKILL_LEVELS } from '../data/drillLibrary';
 import './PlanLibrary.css';
 
 const PlanLibrary = ({ onSelectPlan }) => {
   const navigate = useNavigate();
   const [selectedLevel, setSelectedLevel] = useState('all');
-  const [selectedDuration, setSelectedDuration] = useState('all');
 
   const getFilteredPlans = () => {
     let filtered = practicePlans;
 
     if (selectedLevel !== 'all') {
       filtered = filtered.filter(plan => plan.level === selectedLevel);
-    }
-
-    if (selectedDuration !== 'all') {
-      filtered = filtered.filter(plan => plan.duration === parseInt(selectedDuration));
     }
 
     return filtered;
@@ -44,16 +39,6 @@ const PlanLibrary = ({ onSelectPlan }) => {
             <option value="all">All Levels</option>
             <option value={SKILL_LEVELS.BEGINNER}>Beginner</option>
             <option value={SKILL_LEVELS.INTERMEDIATE}>Intermediate</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>Duration</label>
-          <select value={selectedDuration} onChange={(e) => setSelectedDuration(e.target.value)}>
-            <option value="all">All Durations</option>
-            <option value="60">60 minutes</option>
-            <option value="75">75 minutes</option>
-            <option value="90">90 minutes</option>
           </select>
         </div>
       </div>
