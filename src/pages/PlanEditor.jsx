@@ -207,6 +207,11 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         <div className="plan-meta-header">
           <span className={`level-badge ${plan.level.toLowerCase()}`}>{plan.level}</span>
           <span className="total-time">⏱️ {getTotalTime()} min total</span>
+          <div className="focus-tags-inline">
+            {plan.focusAreas.map((area, idx) => (
+              <span key={idx} className="focus-tag">{area}</span>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -316,15 +321,6 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
             </div>
           );
         })}
-      </div>
-
-      <div className="focus-areas-section">
-        <h3>Focus Areas</h3>
-        <div className="focus-tags">
-          {plan.focusAreas.map((area, idx) => (
-            <span key={idx} className="focus-tag">{area}</span>
-          ))}
-        </div>
       </div>
 
       <DrillSelectorModal
