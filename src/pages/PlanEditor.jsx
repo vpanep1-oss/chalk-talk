@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPracticePlanById } from '../data/practicePlans';
-import { getDrillById } from '../data/drillLibrary';
-import { savePracticeScheduleEntry } from '../firebase/firestore';
+import { getDrillById, getDrillsByCategory } from '../data/drillLibrary';
+import { savePracticeScheduleEntry, getPracticeHistory, getDrillEffectivenessMap } from '../firebase/firestore';
 import DrillSelectorModal from '../components/DrillSelectorModal';
+import DrillRecommendation from '../components/DrillRecommendation';
 import './PlanEditor.css';
 
 const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
@@ -12,6 +13,8 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   const [plan, setPlan] = useState(null);
   const [practiceDate, setPracticeDate] = useState(new Date().toISOString().split('T')[0]);
   const [isEditing, setIsEditing] = useState(false);
+  const [drillEffectiveness, setDrillEffectiveness] = useState({});
+  const [swappingBlockIndex, setSwappingBlockIndex] = useState(null);
   const [modalState, setModalState] = useState({
     isOpen: false,
     mode: null, // 'swap' or 'add'
@@ -32,6 +35,23 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       }
     }
   }, [planId, currentPractice]);
+
+  // Load drill effectiveness data
+  useEffect(() => {
+    const loadEffectiveness = async () => {
+      let sessions = [];
+      if (teamCode) {
+        sessions = await getPracticeHistory(teamCode, 50);
+      } else {
+        sessions = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
+      }
+
+      const effectiveness = getDrillEffectivenessMap(sessions);
+      setDrillEffectiveness(effectiveness);
+    };
+
+    loadEffectiveness();
+  }, [teamCode]);
 
   const handleDurationChange = (blockIndex, newDuration) => {
     const updatedPlan = { ...plan };
@@ -115,6 +135,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
 
   const handleSwapDrill = (blockIndex) => {
     const currentDrill = getDrillById(plan.drillBlocks[blockIndex].drillId);
+    setSwappingBlockIndex(blockIndex);
     setModalState({
       isOpen: true,
       mode: 'swap',
@@ -317,6 +338,26 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
                   <summary>View Details</summary>
                   <p>{drill.details}</p>
                 </details>
+              )}
+              
+              {swappingBlockIndex === index && Object.keys(drillEffectiveness).length > 0 && (
+                <DrillRecommendation
+                  drillsData={getDrillsByCategory(drill?.category || 'all')
+                    .filter(d => d.id !== block.drillId)
+                    .map(d => ({
+                      drillId: d.id,
+                      effectiveness: drillEffectiveness[d.id] || null
+                    }))
+                    .sort((a, b) => (b.effectiveness || 0) - (a.effectiveness || 0))}
+                  currentDrillId={block.drillId}
+                  onSwap={(newDrillId) => {
+                    const updatedPlan = { ...plan };
+                    updatedPlan.drillBlocks[index].drillId = newDrillId;
+                    setPlan(updatedPlan);
+                    setIsEditing(true);
+                    setSwappingBlockIndex(null);
+                  }}
+                />
               )}
             </div>
           );

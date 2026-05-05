@@ -1,26 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { practicePlans } from '../data/practicePlans';
-import { getNotes } from '../firebase/firestore';
+import { getNotes, getPracticeHistory, getRecommendedNextPlan, getLowRatedDrills } from '../firebase/firestore';
 import './Home.css';
 
 const Home = ({ teamCode }) => {
   const [suggestedPlan, setSuggestedPlan] = useState(null);
+  const [effectivenessInfo, setEffectivenessInfo] = useState('');
 
   useEffect(() => {
     let isMounted = true;
 
     const loadSuggestions = async () => {
       let notes = [];
+      let sessions = [];
+
       if (teamCode) {
         notes = await getNotes(teamCode);
+        sessions = await getPracticeHistory(teamCode, 50);
       } else {
         notes = JSON.parse(localStorage.getItem('practiceNotes') || '[]');
+        sessions = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
       }
 
       const currentPractice = JSON.parse(localStorage.getItem('currentPractice') || 'null');
       if (isMounted) {
-        setSuggestedPlan(getSuggestedPlan(currentPractice, notes));
+        const result = getSuggestedPlan(currentPractice, notes, sessions);
+        setSuggestedPlan(result.plan);
+        setEffectivenessInfo(result.reason);
       }
     };
 
@@ -30,28 +37,42 @@ const Home = ({ teamCode }) => {
     };
   }, [teamCode]);
 
-  const getSuggestedPlan = (currentPractice, notes) => {
+  const getSuggestedPlan = (currentPractice, notes, sessions) => {
+    const currentLevel = currentPractice?.plan?.level || 'Beginner';
+    const lowRatedDrills = getLowRatedDrills(sessions);
+
+    // Try smart recommendation engine first
+    const smartRec = getRecommendedNextPlan(sessions, practicePlans, notes, currentLevel);
+    if (smartRec) {
+      return { plan: smartRec, reason: '💡 Based on recent game performance' };
+    }
+
+    // Fall back to focus area matching from recent notes
     const lastPracticeNote = [...notes]
       .filter(note => note.type === 'practice')
       .sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date))[0];
-
-    const currentLevel = currentPractice?.plan?.level || 'Beginner';
 
     if (lastPracticeNote?.category) {
       const focusMatch = practicePlans.find(plan =>
         plan.level === currentLevel &&
         plan.focusAreas.some(area => area.toLowerCase().includes(lastPracticeNote.category.toLowerCase()))
       );
-      if (focusMatch) return focusMatch;
+      if (focusMatch) {
+        return { plan: focusMatch, reason: `📌 Focuses on ${lastPracticeNote.category}` };
+      }
     }
 
+    // Try progression (next plan in sequence)
     if (currentPractice?.plan) {
       const currentIndex = practicePlans.findIndex(plan => plan.id === currentPractice.plan.id);
       const nextPlan = practicePlans.slice(currentIndex + 1).find(plan => plan.level === currentPractice.plan.level);
-      if (nextPlan) return nextPlan;
+      if (nextPlan && !lowRatedDrills.size) {
+        return { plan: nextPlan, reason: '⏭️ Natural progression' };
+      }
     }
 
-    return practicePlans.find(plan => plan.level === currentLevel) || practicePlans[0];
+    const defaultPlan = practicePlans.find(plan => plan.level === currentLevel) || practicePlans[0];
+    return { plan: defaultPlan, reason: '' };
   };
 
   return (
@@ -103,7 +124,10 @@ const Home = ({ teamCode }) => {
       {suggestedPlan && (
         <div className="suggestion-card card">
           <h3>Suggested Next Plan</h3>
-          <p>{suggestedPlan.name}</p>
+          <p className="suggested-plan-name">{suggestedPlan.name}</p>
+          {effectivenessInfo && (
+            <p className="effectiveness-info">{effectivenessInfo}</p>
+          )}
           <div className="suggestion-actions">
             <Link to={`/plan/${suggestedPlan.id}`} className="btn btn-primary">
               View Plan

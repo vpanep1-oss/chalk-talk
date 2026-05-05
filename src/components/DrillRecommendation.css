@@ -1,0 +1,109 @@
+.drill-recommendation {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.recommendation-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.recommendation-icon {
+  font-size: 1.25rem;
+}
+
+.recommendation-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.recommendation-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.recommendation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease;
+}
+
+.recommendation-item:hover {
+  background: var(--surface-dark);
+}
+
+.recommendation-drill-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.recommendation-drill-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+}
+
+.recommendation-drill-category {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.effectiveness-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.effectiveness-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.3s ease;
+}
+
+.effectiveness-score {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 45px;
+  text-align: right;
+}
+
+.swap-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.swap-btn:hover {
+  background: var(--primary-dark);
+}
+
+.swap-btn:active {
+  transform: scale(0.95);
+}

@@ -91,6 +91,42 @@
   padding: var(--spacing-lg);
 }
 
+.suggestion-card {
+  margin-bottom: var(--spacing-lg);
+  border-left: 4px solid var(--primary);
+}
+
+.suggestion-card h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggested-plan-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-primary);
+}
+
+.effectiveness-info {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 500;
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.suggestion-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.suggestion-actions .btn {
+  flex: 1;
+}
+
 @media (max-width: 480px) {
   .quick-actions {
     grid-template-columns: 1fr;

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDrillById } from '../data/drillLibrary';
 import { savePracticeSession } from '../firebase/firestore';
+import PracticeRatingModal from '../components/PracticeRatingModal';
 import './Timer.css';
 
 const Timer = ({ currentPractice, teamCode }) => {
@@ -11,10 +12,13 @@ const Timer = ({ currentPractice, teamCode }) => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [totalElapsed, setTotalElapsed] = useState(0);
   const [practiceComplete, setPracticeComplete] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const [sessionSaved, setSessionSaved] = useState(false);
   const [completionNote, setCompletionNote] = useState('');
   const [sessionSaving, setSessionSaving] = useState(false);
   const [sessionId] = useState(`session_${Date.now()}`);
+  const [sessionRating, setSessionRating] = useState(null);
+  const [sessionFeedback, setSessionFeedback] = useState('');
   const timerRef = useRef(null);
   const audioContextRef = useRef(null);
 
@@ -100,13 +104,24 @@ const Timer = ({ currentPractice, teamCode }) => {
     } else {
       setIsRunning(false);
       setPracticeComplete(true);
+      setShowRatingModal(true);
       playSound(1200, 1000);
-      alert('Practice Complete! Great work! 🏀');
-      saveSession();
     }
   };
 
-  const saveSession = async () => {
+  const handleRatingSubmit = (ratingData) => {
+    setSessionRating(ratingData.rating);
+    setSessionFeedback(ratingData.feedback);
+    setShowRatingModal(false);
+    saveSession(ratingData.rating, ratingData.feedback);
+  };
+
+  const handleSkipRating = () => {
+    setShowRatingModal(false);
+    saveSession(null, '');
+  };
+
+  const saveSession = async (rating = null, feedback = '') => {
     if (sessionSaved || !currentPlan) return;
 
     const session = {
@@ -120,7 +135,9 @@ const Timer = ({ currentPractice, teamCode }) => {
         drillId: block.drillId,
         duration: block.duration
       })),
-      note: completionNote,
+      note: completionNote || feedback,
+      rating: rating,
+      feedback: feedback,
       totalDrills: currentPlan.drillBlocks.length,
       teamCode: teamCode || null
     };
@@ -291,28 +308,41 @@ const Timer = ({ currentPractice, teamCode }) => {
       {practiceComplete && (
         <div className="practice-summary-card card">
           <h3>Practice Complete</h3>
-          <p>Save this session to your practice history and add notes while it's fresh.</p>
-          <textarea
-            className="practice-note-input"
-            rows="4"
-            placeholder="Add a quick summary or coaching note"
-            value={completionNote}
-            onChange={(e) => setCompletionNote(e.target.value)}
-          />
+          <p>
+            {sessionSaved 
+              ? 'Session saved! View your history or start another practice.' 
+              : 'Rate your practice and add notes.'}
+          </p>
+          {!sessionSaved && (
+            <textarea
+              className="practice-note-input"
+              rows="3"
+              placeholder="Add a quick summary or coaching note (optional)"
+              value={completionNote}
+              onChange={(e) => setCompletionNote(e.target.value)}
+            />
+          )}
           <div className="practice-summary-actions">
-            <button
-              className="btn btn-primary"
-              onClick={saveSession}
-              disabled={sessionSaved || sessionSaving}
-            >
-              {sessionSaved ? 'Saved' : sessionSaving ? 'Saving...' : 'Save Session'}
-            </button>
             {sessionSaved && (
-              <span className="saved-indicator">✓ Saved to history</span>
+              <>
+                <button className="btn btn-secondary" onClick={() => navigate('/history')}>
+                  View History
+                </button>
+                <button className="btn btn-primary" onClick={() => navigate('/plans')}>
+                  Start New Practice
+                </button>
+              </>
             )}
           </div>
         </div>
       )}
+
+      <PracticeRatingModal
+        isOpen={showRatingModal}
+        planName={currentPlan?.name}
+        onSubmit={handleRatingSubmit}
+        onClose={handleSkipRating}
+      />
 
       <div className="drill-list-preview">
         <h3>Up Next</h3>

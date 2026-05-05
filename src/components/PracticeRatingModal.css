@@ -1,0 +1,130 @@
+.practice-rating-modal {
+  max-width: 400px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.rating-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.rating-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.star-rating {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.star {
+  background: transparent;
+  border: none;
+  font-size: 2.5rem;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star:hover {
+  opacity: 0.6;
+}
+
+.star.active {
+  opacity: 1;
+}
+
+.rating-display {
+  font-size: 0.85rem;
+  color: var(--primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.feedback-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.feedback-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.feedback-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--surface-dark);
+  border-radius: var(--radius-md);
+  background: var(--surface-light);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.feedback-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.char-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+  text-align: right;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.modal-actions .btn {
+  flex: 1;
+  max-width: 150px;
+}
+
+.modal-actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

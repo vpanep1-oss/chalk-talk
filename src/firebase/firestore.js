@@ -424,3 +424,115 @@ export const syncLocalDataToFirestore = async (teamCode) => {
     console.error('Error syncing local data:', error);
   }
 };
+
+// ==========================================
+// DRILL EFFECTIVENESS & RECOMMENDATIONS
+// ==========================================
+
+/**
+ * Calculate drill effectiveness score (0-1) based on session ratings
+ * @param {Array} sessions - Array of practice sessions
+ * @param {string} drillId - Drill ID to analyze
+ * @returns {number} Effectiveness score (0-1), or null if no ratings
+ */
+export const calculateDrillEffectiveness = (sessions, drillId) => {
+  const sessionsWithDrill = sessions.filter(session =>
+    session.drills?.some(d => d.drillId === drillId) && session.rating
+  );
+
+  if (sessionsWithDrill.length === 0) return null;
+
+  const avgRating = sessionsWithDrill.reduce((sum, s) => sum + (s.rating || 0), 0) / sessionsWithDrill.length;
+  return Math.min(1, avgRating / 5); // Normalize to 0-1 scale
+};
+
+/**
+ * Get drill effectiveness scores for all drills
+ * @param {Array} sessions - Array of practice sessions
+ * @returns {Object} Map of drillId -> effectiveness score
+ */
+export const getDrillEffectivenessMap = (sessions) => {
+  const drillIds = new Set();
+
+  sessions.forEach(session => {
+    session.drills?.forEach(drill => {
+      drillIds.add(drill.drillId);
+    });
+  });
+
+  const effectivenessMap = {};
+  drillIds.forEach(drillId => {
+    const effectiveness = calculateDrillEffectiveness(sessions, drillId);
+    if (effectiveness !== null) {
+      effectivenessMap[drillId] = effectiveness;
+    }
+  });
+
+  return effectivenessMap;
+};
+
+/**
+ * Get recommended next plan based on recent sessions and focus areas
+ * @param {Array} sessions - Recent practice sessions
+ * @param {Array} practicePlans - All available practice plans
+ * @param {Array} notes - Game notes
+ * @param {string} currentLevel - Current difficulty level
+ * @returns {object} Recommended plan or null
+ */
+export const getRecommendedNextPlan = (sessions, practicePlans, notes, currentLevel = 'Beginner') => {
+  if (!sessions.length || !practicePlans.length) return null;
+
+  // Get focus areas from recent game notes
+  const recentGameNotes = notes
+    .filter(n => n.type === 'game')
+    .sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date))
+    .slice(0, 3);
+
+  const neededFocusAreas = new Set(
+    recentGameNotes.map(n => n.category).filter(Boolean)
+  );
+
+  // Get plans for current level that address needed focus areas
+  const relevantPlans = practicePlans.filter(plan => {
+    if (plan.level !== currentLevel) return false;
+    if (neededFocusAreas.size === 0) return true;
+    return plan.focusAreas.some(area =>
+      Array.from(neededFocusAreas).some(focus =>
+        area.toLowerCase().includes(focus.toLowerCase())
+      )
+    );
+  });
+
+  return relevantPlans.length > 0 ? relevantPlans[0] : null;
+};
+
+/**
+ * Get low-rated drills to avoid in recommendations
+ * @param {Array} sessions - Array of practice sessions
+ * @param {number} threshold - Rating threshold (default 2.5/5)
+ * @returns {Set} Set of low-rated drillIds
+ */
+export const getLowRatedDrills = (sessions, threshold = 2.5) => {
+  const drillRatings = {};
+
+  sessions.forEach(session => {
+    if (!session.rating || !session.drills) return;
+
+    session.drills.forEach(drill => {
+      if (!drillRatings[drill.drillId]) {
+        drillRatings[drill.drillId] = [];
+      }
+      drillRatings[drill.drillId].push(session.rating);
+    });
+  });
+
+  const lowRatedDrills = new Set();
+  Object.entries(drillRatings).forEach(([drillId, ratings]) => {
+    const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+    if (avgRating < threshold && ratings.length >= 2) {
+      lowRatedDrills.add(drillId);
+    }
+  });
+
+  return lowRatedDrills;
+};
