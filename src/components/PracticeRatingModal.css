@@ -128,3 +128,132 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Drill Review Section */
+.drills-review-section {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+}
+
+.review-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.drills-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.drills-review-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+}
+
+.review-drill-info {
+  flex: 1;
+}
+
+.review-drill-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.review-drill-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.swap-btn {
+  background: transparent;
+  border: 1px solid var(--surface-dark);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  margin-left: var(--spacing-sm);
+}
+
+.swap-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Drill Swap Section */
+.drill-swap-section {
+  padding: var(--spacing-md);
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.swap-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+}
+
+.swap-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.swap-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border: 2px solid var(--surface-dark);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.swap-option:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.swap-drill-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.swap-drill-category {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.no-swap-options {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--spacing-lg);
+  margin: 0;
+}
+

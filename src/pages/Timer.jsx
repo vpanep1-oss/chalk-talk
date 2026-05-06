@@ -20,9 +20,12 @@ const Timer = ({ currentPractice, teamCode }) => {
   const [sessionRating, setSessionRating] = useState(null);
   const [sessionFeedback, setSessionFeedback] = useState('');
   const [expandedDrill, setExpandedDrill] = useState(null);
+  const [practicedrills, setPracticeDrills] = useState([]); // Drills actually completed
   const timerRef = useRef(null);
   const audioContextRef = useRef(null);
-  const lastVisibleRef = useRef(Date.now());
+  const lastVisibleRef = useRef(null);
+  const isHiddenRef = useRef(false);
+  const drillStartTimeRef = useRef(null); // Track when current drill started
 
   const currentPlan = currentPractice?.plan;
 
@@ -36,21 +39,32 @@ const Timer = ({ currentPractice, teamCode }) => {
       setSessionSaved(false);
       setCompletionNote('');
       setSessionSaving(false);
+      setPracticeDrills(currentPlan.drillBlocks.map((block, idx) => ({
+        index: idx,
+        drillId: block.drillId,
+        duration: block.duration
+      })));
     }
   }, [currentPlan]);
 
-  // Handle page visibility to keep timer running in background
+  // Handle page visibility - catch up timer when tab becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
+        // Tab is being hidden - just record the time
+        isHiddenRef.current = true;
         lastVisibleRef.current = Date.now();
-      } else if (isRunning) {
-        // When tab becomes visible again, catch up elapsed time
-        const elapsed = Math.floor((Date.now() - lastVisibleRef.current) / 1000);
-        if (elapsed > 0) {
-          setTimeRemaining(prev => Math.max(0, prev - elapsed));
-          setTotalElapsed(prev => prev + elapsed);
+      } else {
+        // Tab is becoming visible again
+        if (isHiddenRef.current && lastVisibleRef.current && isRunning) {
+          // Calculate how much time passed while hidden and catch up
+          const hiddenDuration = Math.floor((Date.now() - lastVisibleRef.current) / 1000);
+          if (hiddenDuration > 0) {
+            setTimeRemaining(prev => Math.max(0, prev - hiddenDuration));
+            setTotalElapsed(prev => prev + hiddenDuration);
+          }
         }
+        isHiddenRef.current = false;
       }
     };
 
@@ -60,19 +74,29 @@ const Timer = ({ currentPractice, teamCode }) => {
 
   useEffect(() => {
     if (isRunning && timeRemaining > 0) {
+      // Initialize drill start time on first run
+      if (!drillStartTimeRef.current) {
+        drillStartTimeRef.current = Date.now();
+      }
+
       timerRef.current = setInterval(() => {
         setTimeRemaining(prev => {
-          if (prev <= 1) {
+          const newTime = Math.max(0, prev - 1);
+          setTotalElapsed(prevTotal => prevTotal + 1);
+          
+          if (newTime === 0) {
             handleDrillComplete();
-            return 0;
           }
-          return prev - 1;
+          return newTime;
         });
-        setTotalElapsed(prev => prev + 1);
       }, 1000);
     } else {
+      // Reset drill start time when paused
       if (timerRef.current) {
         clearInterval(timerRef.current);
+      }
+      if (!isRunning) {
+        drillStartTimeRef.current = null;
       }
     }
 
@@ -133,33 +157,38 @@ const Timer = ({ currentPractice, teamCode }) => {
   const handleRatingSubmit = (ratingData) => {
     setSessionRating(ratingData.rating);
     setSessionFeedback(ratingData.feedback);
+    if (ratingData.drills) {
+      setPracticeDrills(ratingData.drills);
+    }
     setShowRatingModal(false);
-    saveSession(ratingData.rating, ratingData.feedback);
+    saveSession(ratingData.rating, ratingData.feedback, ratingData.drills);
   };
 
   const handleSkipRating = () => {
     setShowRatingModal(false);
-    saveSession(null, '');
+    saveSession(null, '', null);
   };
 
-  const saveSession = async (rating = null, feedback = '') => {
+  const saveSession = async (rating = null, feedback = '', modifiedDrills = null) => {
     if (sessionSaved || !currentPlan) return;
+
+    const drillsToSave = modifiedDrills && modifiedDrills.length > 0 ? modifiedDrills : currentPlan.drillBlocks;
 
     const session = {
       id: sessionId,
       planId: currentPlan.id,
       planName: currentPlan.name,
       date: currentPractice?.date || new Date().toISOString().split('T')[0],
-      durationMinutes: currentPlan.drillBlocks.reduce((sum, block) => sum + block.duration, 0),
+      durationMinutes: drillsToSave.reduce((sum, block) => sum + block.duration, 0),
       completedAt: new Date().toISOString(),
-      drills: currentPlan.drillBlocks.map(block => ({
+      drills: drillsToSave.map(block => ({
         drillId: block.drillId,
         duration: block.duration
       })),
       note: completionNote || feedback,
       rating: rating,
       feedback: feedback,
-      totalDrills: currentPlan.drillBlocks.length,
+      totalDrills: drillsToSave.length,
       teamCode: teamCode || null
     };
 
@@ -195,6 +224,7 @@ const Timer = ({ currentPractice, teamCode }) => {
       const nextIndex = currentDrillIndex + 1;
       setCurrentDrillIndex(nextIndex);
       setTimeRemaining(currentPlan.drillBlocks[nextIndex].duration * 60);
+      drillStartTimeRef.current = null;
       playSound(700, 100);
     }
   };
@@ -204,8 +234,16 @@ const Timer = ({ currentPractice, teamCode }) => {
       const prevIndex = currentDrillIndex - 1;
       setCurrentDrillIndex(prevIndex);
       setTimeRemaining(currentPlan.drillBlocks[prevIndex].duration * 60);
+      drillStartTimeRef.current = null;
       playSound(700, 100);
     }
+  };
+
+  const handleCompletePractice = () => {
+    setIsRunning(false);
+    setPracticeComplete(true);
+    setShowRatingModal(true);
+    playSound(1200, 1000);
   };
 
   const formatTime = (seconds) => {
@@ -324,6 +362,14 @@ const Timer = ({ currentPractice, teamCode }) => {
         >
           Next ⏭️
         </button>
+
+        <button
+          className="control-btn control-btn-complete"
+          onClick={handleCompletePractice}
+          title="Skip remaining drills and complete practice"
+        >
+          ✓ Complete
+        </button>
       </div>
 
       {practiceComplete && (
@@ -361,6 +407,7 @@ const Timer = ({ currentPractice, teamCode }) => {
       <PracticeRatingModal
         isOpen={showRatingModal}
         planName={currentPlan?.name}
+        drills={practicedrills}
         onSubmit={handleRatingSubmit}
         onClose={handleSkipRating}
       />

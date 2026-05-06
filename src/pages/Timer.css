@@ -129,6 +129,18 @@
   border-color: var(--warning);
 }
 
+.control-btn-complete {
+  background: var(--success, #4caf50);
+  border-color: var(--success, #4caf50);
+  color: white;
+  font-size: 1rem;
+}
+
+.control-btn-complete:not(:disabled):hover {
+  opacity: 0.9;
+  transform: none;
+}
+
 .drill-list-preview {
   background: var(--surface);
   border-radius: var(--radius-lg);
