@@ -19,8 +19,10 @@ const Timer = ({ currentPractice, teamCode }) => {
   const [sessionId] = useState(`session_${Date.now()}`);
   const [sessionRating, setSessionRating] = useState(null);
   const [sessionFeedback, setSessionFeedback] = useState('');
+  const [expandedDrill, setExpandedDrill] = useState(null);
   const timerRef = useRef(null);
   const audioContextRef = useRef(null);
+  const lastVisibleRef = useRef(Date.now());
 
   const currentPlan = currentPractice?.plan;
 
@@ -36,6 +38,25 @@ const Timer = ({ currentPractice, teamCode }) => {
       setSessionSaving(false);
     }
   }, [currentPlan]);
+
+  // Handle page visibility to keep timer running in background
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        lastVisibleRef.current = Date.now();
+      } else if (isRunning) {
+        // When tab becomes visible again, catch up elapsed time
+        const elapsed = Math.floor((Date.now() - lastVisibleRef.current) / 1000);
+        if (elapsed > 0) {
+          setTimeRemaining(prev => Math.max(0, prev - elapsed));
+          setTotalElapsed(prev => prev + elapsed);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isRunning]);
 
   useEffect(() => {
     if (isRunning && timeRemaining > 0) {
@@ -344,15 +365,47 @@ const Timer = ({ currentPractice, teamCode }) => {
         onClose={handleSkipRating}
       />
 
-      <div className="drill-list-preview">
-        <h3>Up Next</h3>
-        <div className="drill-queue">
-          {currentPlan.drillBlocks.slice(currentDrillIndex + 1, currentDrillIndex + 4).map((block, idx) => {
+      <div className="practice-outline-section">
+        <h3>Practice Outline</h3>
+        <div className="practice-drills-list">
+          {currentPlan.drillBlocks.map((block, idx) => {
             const drill = getDrillById(block.drillId);
+            const isCurrentDrill = idx === currentDrillIndex;
+            const isDrillCompleted = idx < currentDrillIndex;
+            const isExpanded = expandedDrill === idx;
+
             return (
-              <div key={idx} className="queue-item">
-                <span className="queue-name">{drill?.name}</span>
-                <span className="queue-duration">{block.duration} min</span>
+              <div
+                key={idx}
+                className={`practice-drill-item ${isCurrentDrill ? 'current' : ''} ${isDrillCompleted ? 'completed' : ''}`}
+              >
+                <div
+                  className="drill-item-header"
+                  onClick={() => setExpandedDrill(isExpanded ? null : idx)}
+                >
+                  <div className="drill-item-info">
+                    <span className="drill-number">{idx + 1}.</span>
+                    <span className="drill-item-name">{drill?.name}</span>
+                  </div>
+                  <div className="drill-item-meta">
+                    <span className="drill-item-duration">{block.duration} min</span>
+                    <span className={`drill-item-toggle ${isExpanded ? 'expanded' : ''}`}>▼</span>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="drill-item-details">
+                    <p className="drill-detail-category">{drill?.category}</p>
+                    {drill?.description && (
+                      <p className="drill-detail-description">{drill.description}</p>
+                    )}
+                    {drill?.details && (
+                      <div className="drill-detail-full">
+                        <p>{drill.details}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
