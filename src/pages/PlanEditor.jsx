@@ -24,17 +24,16 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
 
   useEffect(() => {
     if (planId) {
-      const loadedPlan = currentPractice?.plan?.id === planId
-        ? currentPractice.plan
-        : getPracticePlanById(planId);
+      // Always load the original template plan, not the potentially modified current practice
+      const originalPlan = getPracticePlanById(planId);
 
-      if (loadedPlan) {
-        setPlan(JSON.parse(JSON.stringify(loadedPlan))); // Deep clone
+      if (originalPlan) {
+        setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
         setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
         setIsEditing(false);
       }
     }
-  }, [planId, currentPractice]);
+  }, [planId]);
 
   // Load drill effectiveness data
   useEffect(() => {
@@ -224,7 +223,10 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         <button className="back-btn" onClick={() => navigate('/plans')}>
           ← Back
         </button>
-        <h1 className="page-title">{plan.name}</h1>
+        <div className="header-content">
+          <h1 className="page-title">{plan.name}</h1>
+          <p className="template-note">Original template plan • Make changes and save as current practice</p>
+        </div>
         <div className="plan-meta-header">
           <span className={`level-badge ${plan.level.toLowerCase()}`}>{plan.level}</span>
           <span className="total-time">⏱️ {getTotalTime()} min total</span>

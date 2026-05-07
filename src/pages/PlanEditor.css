@@ -2,6 +2,13 @@
   padding-bottom: calc(var(--spacing-xl) + 60px);
 }
 
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
 .back-btn {
   background: transparent;
   border: none;
@@ -10,6 +17,18 @@
   padding: var(--spacing-sm);
   margin-bottom: var(--spacing-sm);
   cursor: pointer;
+}
+
+.header-content {
+  flex: 1;
+  margin-right: var(--spacing-lg);
+}
+
+.template-note {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: var(--spacing-xs) 0 0 0;
+  font-style: italic;
 }
 
 .plan-meta-header {
