@@ -80,16 +80,30 @@
 .practice-date-section input {
   width: 100%;
   padding: var(--spacing-md);
-  background: var(--surface-light);
+  background: var(--background);
   border: 2px solid var(--surface-dark);
   border-radius: var(--radius-md);
   font-size: 1rem;
+  font-weight: 600;
   color: var(--text-primary);
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .practice-date-section input:focus {
   outline: none;
   border-color: var(--primary);
+}
+
+.practice-date-section input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.8;
+  padding: 4px;
+}
+
+.practice-date-section input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 .practice-name-section {
@@ -110,11 +124,13 @@
 .practice-name-section input {
   width: 100%;
   padding: var(--spacing-md);
-  background: var(--surface-light);
+  background: var(--background);
   border: 2px solid var(--surface-dark);
   border-radius: var(--radius-md);
   font-size: 1rem;
   color: var(--text-primary);
+  position: relative;
+  z-index: 1;
 }
 
 .practice-name-section input:focus {
