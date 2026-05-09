@@ -539,6 +539,15 @@ export const drills = [
     details: 'Players pair up with one basketball. First player speed dribbles to the other end and back, then partner goes. Change rules each race: left hand, right hand, alternate. Focus on eyes up and ball control.'
   },
   {
+    id: 'character-message',
+    name: 'Character Message',
+    duration: 2,
+    category: DRILL_CATEGORIES.SPECIAL_SITUATIONS,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: 'Pre-practice character development message',
+    details: 'Coach shares a brief character development or motivational message at the start of practice.'
+  },
+  {
     id: 'close-practice-reminders',
     name: 'Close Practice - Reminders',
     duration: 3,

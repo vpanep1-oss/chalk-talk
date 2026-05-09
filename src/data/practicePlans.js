@@ -12,6 +12,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 3 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'red-light-green-light-stance', duration: 8 },
@@ -33,6 +34,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -55,6 +57,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -77,6 +80,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -99,6 +103,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -123,6 +128,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -147,6 +153,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -171,6 +178,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 6 },
@@ -195,6 +203,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 3 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'red-light-green-light-stance', duration: 8 },
@@ -216,6 +225,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 3 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'red-light-green-light-stance', duration: 8 },
@@ -237,6 +247,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 3 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'red-light-green-light-stance', duration: 8 },
@@ -258,6 +269,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -278,6 +290,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -299,6 +312,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -320,6 +334,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -341,6 +356,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-stretch-without-basketballs', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'forward-reverse-pivots', duration: 8 },
@@ -363,6 +379,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 6 },
       { drillId: '1v1-closeouts', duration: 6 },
@@ -385,6 +402,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -412,6 +430,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -439,6 +458,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -466,6 +486,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -493,6 +514,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -520,6 +542,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -547,6 +570,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -574,6 +598,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 8 },
       { drillId: 'change-of-direction-moves', duration: 10 },
@@ -598,6 +623,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'ball-handling-moving', duration: 5 },
@@ -623,6 +649,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -648,6 +675,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -673,6 +701,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -698,6 +727,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -724,6 +754,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
@@ -751,6 +782,7 @@ export const practicePlans = [
     duration: 90,
     focusAreas: ['Complete Skills', 'Team Play'],
     drillBlocks: [
+      { drillId: 'character-message', duration: 2 },
       { drillId: 'dynamic-warmup', duration: 6 },
       { drillId: 'form-shooting', duration: 5 },
       { drillId: 'change-of-direction-moves', duration: 5 },
