@@ -5,6 +5,7 @@ import { getDrillById, getDrillsByCategory } from '../data/drillLibrary';
 import { savePracticeScheduleEntry, getPracticeHistory, getDrillEffectivenessMap } from '../firebase/firestore';
 import DrillSelectorModal from '../components/DrillSelectorModal';
 import DrillRecommendation from '../components/DrillRecommendation';
+import { exportPracticePlanToPDF } from '../utils/exportPDF';
 import './PlanEditor.css';
 import './PlanEditor.print.css';
 
@@ -134,7 +135,16 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   };
 
   const handlePrintExport = () => {
-    window.print();
+    // Create a plan object with full drill data for PDF export
+    const planWithDrills = {
+      ...plan,
+      drillBlocks: plan.drillBlocks.map(block => ({
+        ...block,
+        drill: getDrillById(block.drillId)
+      }))
+    };
+
+    exportPracticePlanToPDF(planWithDrills, practiceDate);
   };
 
   const handleSwapDrill = (blockIndex) => {
@@ -291,7 +301,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
           🗓️ Schedule for {practiceDate}
         </button>
         <button className="btn btn-outline" onClick={handlePrintExport}>
-          🖨️ Print / Export PDF
+          📥 Download PDF
         </button>
       </div>
 
