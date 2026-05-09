@@ -22,6 +22,13 @@
     size: letter portrait;
   }
 
+  /* Fix scroll container issues - allow full content to print */
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   body {
     font-size: 11pt;
     line-height: 1.4;
@@ -29,13 +36,26 @@
     background: #fff;
   }
 
+  .app {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .app > div:first-child {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
   .page {
     padding: 0;
     max-width: 100%;
+    min-height: 0 !important;
+    height: auto !important;
   }
 
   .plan-editor-page {
     padding: 0;
+    height: auto !important;
   }
 
   /* Header formatting */
