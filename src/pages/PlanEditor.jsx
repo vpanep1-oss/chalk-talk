@@ -6,6 +6,7 @@ import { savePracticeScheduleEntry, getPracticeHistory, getDrillEffectivenessMap
 import DrillSelectorModal from '../components/DrillSelectorModal';
 import DrillRecommendation from '../components/DrillRecommendation';
 import './PlanEditor.css';
+import './PlanEditor.print.css';
 
 const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   const { planId } = useParams();
@@ -130,6 +131,10 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       localStorage.setItem(scheduleKey, JSON.stringify(updatedSchedule));
       alert(`Practice plan scheduled for ${practiceDate}`);
     }
+  };
+
+  const handlePrintExport = () => {
+    window.print();
   };
 
   const handleSwapDrill = (blockIndex) => {
@@ -285,6 +290,9 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         <button className="btn btn-outline" onClick={handleSchedulePractice}>
           🗓️ Schedule for {practiceDate}
         </button>
+        <button className="btn btn-outline" onClick={handlePrintExport}>
+          🖨️ Print / Export PDF
+        </button>
       </div>
 
       <div className="add-drill-section">
@@ -306,7 +314,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
                   <p className="drill-category">{drill?.category}</p>
                 </div>
                 <div className="drill-controls">
-                  <div className="duration-input">
+                  <div className="duration-input" data-duration={block.duration}>
                     <input
                       type="number"
                       min="1"
