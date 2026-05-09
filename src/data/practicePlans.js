@@ -782,3 +782,8 @@ export const practicePlans = [
     ]
   }
 ];
+
+// Helper function to get a practice plan by ID
+export function getPracticePlanById(id) {
+  return practicePlans.find(plan => plan.id === id);
+}
