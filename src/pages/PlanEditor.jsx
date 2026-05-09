@@ -14,6 +14,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
   const [practiceDate, setPracticeDate] = useState(new Date().toISOString().split('T')[0]);
+  const [customPlanName, setCustomPlanName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [drillEffectiveness, setDrillEffectiveness] = useState({});
   const [swappingBlockIndex, setSwappingBlockIndex] = useState(null);
@@ -32,6 +33,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       if (originalPlan) {
         setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
         setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
+        setCustomPlanName(''); // Reset custom name when loading a new plan
         setIsEditing(false);
       }
     }
@@ -108,10 +110,11 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   };
 
   const handleSchedulePractice = async () => {
+    const displayName = customPlanName.trim() || plan.name;
     const entry = {
       id: `${plan.id}_${practiceDate}`,
       planId: plan.id,
-      planName: plan.name,
+      planName: displayName,
       level: plan.level,
       duration: getTotalTime(),
       date: practiceDate
@@ -120,7 +123,7 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
     if (teamCode) {
       try {
         await savePracticeScheduleEntry(teamCode, entry);
-        alert(`Practice plan scheduled for ${practiceDate} and synced to your team.`);
+        alert(`"${displayName}" scheduled for ${practiceDate} and synced to your team.`);
       } catch (error) {
         console.error(error);
         alert('Unable to save schedule to Firestore. Your plan was not scheduled.');
@@ -130,14 +133,16 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       const schedule = JSON.parse(localStorage.getItem(scheduleKey) || '[]');
       const updatedSchedule = [...schedule.filter(item => item.planId !== plan.id || item.date !== practiceDate), entry];
       localStorage.setItem(scheduleKey, JSON.stringify(updatedSchedule));
-      alert(`Practice plan scheduled for ${practiceDate}`);
+      alert(`"${displayName}" scheduled for ${practiceDate}`);
     }
   };
 
   const handlePrintExport = () => {
     // Create a plan object with full drill data for PDF export
+    const displayName = customPlanName.trim() || plan.name;
     const planWithDrills = {
       ...plan,
+      name: displayName, // Use custom name if provided
       drillBlocks: plan.drillBlocks.map(block => ({
         ...block,
         drill: getDrillById(block.drillId)
@@ -261,6 +266,20 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
           value={practiceDate}
           onChange={(e) => setPracticeDate(e.target.value)}
         />
+      </div>
+
+      <div className="practice-name-section">
+        <label htmlFor="custom-name">Custom Practice Name (Optional)</label>
+        <input
+          id="custom-name"
+          type="text"
+          placeholder={plan.name}
+          value={customPlanName}
+          onChange={(e) => setCustomPlanName(e.target.value)}
+        />
+        <p className="custom-name-hint">
+          Leave blank to use the default template name. Custom names appear in your schedule and exported PDFs.
+        </p>
       </div>
 
       <div className="time-adjustment-section">

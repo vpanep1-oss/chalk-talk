@@ -136,7 +136,7 @@ const Settings = ({ teamCode, setTeamCode }) => {
         <h2 className="section-title">About</h2>
         <div className="about-info">
           <p>
-            <strong>Basketball Practice Builder</strong><br />
+            <strong>Chalk Talk</strong><br />
             Version 1.0.0
           </p>
           <p>

@@ -79,7 +79,7 @@ const Home = ({ teamCode }) => {
     <div className="page home-page">
       <div className="home-header">
         <div className="logo">🏀</div>
-        <h1 className="app-title">Basketball Practice Builder</h1>
+        <h1 className="app-title">Chalk Talk</h1>
         <p className="app-subtitle">Coach Jim Huber's Breakthrough Basketball Practice Plans</p>
       </div>
 

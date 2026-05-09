@@ -26,8 +26,8 @@ export default defineConfig({
   },
   // PWA manifest config
   manifest: {
-    name: 'Basketball Practice Builder',
-    short_name: 'Practice Builder',
+    name: 'Chalk Talk',
+    short_name: 'Chalk Talk',
     description: 'Plan and run youth basketball practices with Coach Jim Huber\'s proven practice plans',
     theme_color: '#FF6B35',
     background_color: '#1A1A1A',
