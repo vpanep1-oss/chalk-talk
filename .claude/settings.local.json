@@ -8,7 +8,21 @@
       "Bash(git commit -m ' *)",
       "Bash(git remote *)",
       "Bash(git branch *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(grep -E \"^\\\\.env$|^\\\\.env\\\\.local$\" .gitignore)",
+      "Bash(git commit -m 'Add Settings to navigation bar *)",
+      "Bash(node scale-plans.js)",
+      "Bash(node scale-plans.cjs)",
+      "Bash(npm run *)",
+      "Bash(pkill -f vite)",
+      "Bash(git checkout *)",
+      "PowerShell(python verify_practice_plans.py)",
+      "PowerShell(npm run build)",
+      "Bash(python -c ' *)",
+      "Bash(python verify_all_plans_detailed.py)",
+      "Bash(python fix_all_practice_plans.py)",
+      "Bash(python summarize_mismatches.py)",
+      "Bash(git commit *)"
     ]
   },
   "model": "claude-sonnet-4-5"
