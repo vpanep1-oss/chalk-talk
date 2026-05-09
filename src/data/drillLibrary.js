@@ -1176,6 +1176,69 @@ export const drills = [
     details: 'Triple threat at 3-point line. Attack hard to reach rim in 1 dribble. Both sides, both hands.'
   },
   {
+    id: 'layups-half-court',
+    name: 'Layups ½ Ct.',
+    duration: null,
+    category: DRILL_CATEGORIES.FINISHING,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: 'Layups from half court',
+    details: 'Players start at half court and drive to the basket for layups. Focus on proper footwork and finishing technique.'
+  },
+  {
+    id: 'finishing-layups',
+    name: 'Finishing: Lay Ups',
+    duration: null,
+    category: DRILL_CATEGORIES.FINISHING,
+    skillLevel: [SKILL_LEVELS.INTERMEDIATE],
+    description: 'Layup finishing techniques',
+    details: 'Work on various layup finishing techniques including reverses, off-hand finishes, and contact finishes.'
+  },
+  {
+    id: '1v1-foster-drill',
+    name: '1v1 Foster Drill',
+    duration: 5,
+    category: DRILL_CATEGORIES.OFFENSIVE_SKILLS,
+    skillLevel: [SKILL_LEVELS.INTERMEDIATE],
+    description: '1v1 speed dribble drill',
+    details: 'Speed dribble around a cone and try to beat defender to the basket. Focus on dribbling fast, attacking the basket, and reading the defender.'
+  },
+  {
+    id: '2v1-halfcourt-break',
+    name: '2v1 Halfcourt Break',
+    duration: 5,
+    category: DRILL_CATEGORIES.TEAM_OFFENSE,
+    skillLevel: [SKILL_LEVELS.INTERMEDIATE],
+    description: '2 on 1 fast break drill',
+    details: 'Start at half court with 2 offense vs 1 defense. Focus on reading the defense and making the correct pass, finishing at the rim.'
+  },
+  {
+    id: '3v3-x-out-closeouts',
+    name: '3v3 X Out Closeouts',
+    duration: 5,
+    category: DRILL_CATEGORIES.DEFENSE,
+    skillLevel: [SKILL_LEVELS.INTERMEDIATE],
+    description: '3v3 closeout drill',
+    details: '3v3 closeout drill focusing on proper closeout technique and defensive rotations.'
+  },
+  {
+    id: '4v4-cutters-motion-offense',
+    name: '4v4 Cutters Motion Offense',
+    duration: 10,
+    category: DRILL_CATEGORIES.TEAM_OFFENSE,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: '4v4 motion offense with cutters',
+    details: '4v4 motion offense drill with 2 dribble limit. Focus on proper spacing, reading defense and making correct cuts, squaring up to the basket.'
+  },
+  {
+    id: '4v4-shell-defense-cutters',
+    name: 'Defense 4v4 Shell Cutters',
+    duration: 10,
+    category: DRILL_CATEGORIES.DEFENSE,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: '4v4 defensive shell drill with cutters',
+    details: '4v4 defensive shell drill working on defensive positioning. Focus on on-ball defense, gap defense, help side defense, and seeing the ball at all times.'
+  },
+  {
     id: '1v1-with-chair',
     name: '1v1 with a Chair',
     duration: 10,
