@@ -45,6 +45,15 @@ export const drills = [
     description: 'Dynamic stretching warm-up routine',
     details: 'Proper form and technique. Progress through as many stretches as possible.'
   },
+  {
+    id: 'pre-practice-character-message',
+    name: 'Character Message',
+    duration: 3,
+    category: DRILL_CATEGORIES.SPECIAL_SITUATIONS,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: 'Team character message before practice',
+    details: 'Coach shares a short message to set tone, focus, and expectations for practice.'
+  },
 
   // === PIVOTING DRILLS ===
   {
@@ -521,6 +530,24 @@ export const drills = [
     details: 'Both dribbling, one is "it". Tag partner. Allow time to release. Work on speed and direction changes.'
   },
   {
+    id: 'partner-speed-dribble',
+    name: 'Partner Speed Dribble',
+    duration: 5,
+    category: DRILL_CATEGORIES.BALL_HANDLING,
+    skillLevel: [SKILL_LEVELS.BEGINNER],
+    description: 'Partner speed dribble racing drill',
+    details: 'Players pair up with one basketball. First player speed dribbles to the other end and back, then partner goes. Change rules each race: left hand, right hand, alternate. Focus on eyes up and ball control.'
+  },
+  {
+    id: 'close-practice-reminders',
+    name: 'Close Practice - Reminders',
+    duration: 3,
+    category: DRILL_CATEGORIES.SPECIAL_SITUATIONS,
+    skillLevel: [SKILL_LEVELS.BEGINNER, SKILL_LEVELS.INTERMEDIATE],
+    description: 'Close practice with reminders and wrap-up',
+    details: 'Finish practice with a short team review and reminders. Reinforce key learnings, next steps, and positive habits.'
+  },
+  {
     id: 'dribble-tag-1v-all',
     name: 'Dribble Tag 1v All',
     duration: null,
@@ -743,6 +770,15 @@ export const drills = [
     skillLevel: [SKILL_LEVELS.BEGINNER],
     description: 'Basic passing techniques and catching',
     details: 'Chest pass, bounce pass, overhead pass. Step, snap, follow through. On target, one time, on a line.'
+  },
+  {
+    id: 'passing-chest-bounce-overhead',
+    name: 'Passing: Chest, Bounce, Overhead',
+    duration: 7,
+    category: DRILL_CATEGORIES.PASSING,
+    skillLevel: [SKILL_LEVELS.BEGINNER],
+    description: 'Stationary passing drills with chest, bounce, and overhead passes',
+    details: 'Spend 90 seconds on each stationary passing drill. Focus on passing on a line and passing accurately.'
   },
   {
     id: 'chest-pass',
@@ -1084,6 +1120,15 @@ export const drills = [
     skillLevel: [SKILL_LEVELS.BEGINNER],
     description: 'Basic layup technique both hands',
     details: '0 dribble layups, 1 dribble layups. Pick up with 2 hands, rip to ear, drive outside knee up, jump UP not out.'
+  },
+  {
+    id: 'layups-0-1-dribble',
+    name: 'Layups: 0 Dribbles & 1 Dribble',
+    duration: 6,
+    category: DRILL_CATEGORIES.FINISHING,
+    skillLevel: [SKILL_LEVELS.BEGINNER],
+    description: 'Layup finishing techniques from both right and left sides',
+    details: 'Work on 0 dribble and 1 dribble layups from the first hash mark. Emphasize ripping the ball to the ear, using the backboard, and proper footwork.'
   },
   {
     id: 'cadence-drill',
@@ -1685,6 +1730,15 @@ export const drills = [
     skillLevel: [SKILL_LEVELS.BEGINNER],
     description: 'Passing and cutting fundamentals',
     details: 'Getting open, showing target hand, facing up to basket. Cut to score, cut to get open.'
+  },
+  {
+    id: 'offense-2v0-2v2',
+    name: 'Offense 2v0 - 2v2',
+    duration: 10,
+    category: DRILL_CATEGORIES.OFFENSE,
+    skillLevel: [SKILL_LEVELS.BEGINNER],
+    description: 'Work on passing and cutting with and without defense',
+    details: 'Start with a 2v0 passing and cutting progression and move into 2v2 live play. Focus on getting open, showing target hand, and facing up to the basket.'
   },
   {
     id: '3v0',
