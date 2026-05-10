@@ -223,6 +223,31 @@
   margin-bottom: var(--spacing-lg);
 }
 
+.empty-drill-blocks {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-drill-blocks .empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+.empty-drill-blocks h3 {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.empty-drill-blocks p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 .drill-block-card {
   background: var(--surface);
   border-radius: var(--radius-lg);

@@ -27,14 +27,30 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
 
   useEffect(() => {
     if (planId) {
-      // Always load the original template plan, not the potentially modified current practice
-      const originalPlan = getPracticePlanById(planId);
+      if (planId === 'new') {
+        // Create a new empty custom plan
+        const emptyPlan = {
+          id: 'custom-' + Date.now(),
+          name: 'Custom Practice Plan',
+          level: 'Beginner',
+          duration: 0,
+          focusAreas: ['Custom'],
+          drillBlocks: []
+        };
+        setPlan(emptyPlan);
+        setPracticeDate(new Date().toISOString().split('T')[0]);
+        setCustomPlanName('');
+        setIsEditing(true);
+      } else {
+        // Load the original template plan
+        const originalPlan = getPracticePlanById(planId);
 
-      if (originalPlan) {
-        setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
-        setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
-        setCustomPlanName(''); // Reset custom name when loading a new plan
-        setIsEditing(false);
+        if (originalPlan) {
+          setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
+          setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
+          setCustomPlanName(''); // Reset custom name when loading a new plan
+          setIsEditing(false);
+        }
       }
     }
   }, [planId]);
@@ -244,8 +260,13 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
           ← Back
         </button>
         <div className="header-content">
-          <h1 className="page-title">{plan.name}</h1>
-          <p className="template-note">Original template plan • Make changes and save as current practice</p>
+          <h1 className="page-title">{customPlanName.trim() || plan.name}</h1>
+          <p className="template-note">
+            {planId === 'new'
+              ? 'Custom plan • Add drills from the library below'
+              : 'Original template plan • Make changes and save as current practice'
+            }
+          </p>
         </div>
         <div className="plan-meta-header">
           <span className={`level-badge ${plan.level.toLowerCase()}`}>{plan.level}</span>
@@ -269,7 +290,9 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       </div>
 
       <div className="practice-name-section">
-        <label htmlFor="custom-name">Custom Practice Name (Optional)</label>
+        <label htmlFor="custom-name">
+          {planId === 'new' ? 'Practice Name' : 'Custom Practice Name (Optional)'}
+        </label>
         <input
           id="custom-name"
           type="text"
@@ -278,7 +301,10 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
           onChange={(e) => setCustomPlanName(e.target.value)}
         />
         <p className="custom-name-hint">
-          Leave blank to use the default template name. Custom names appear in your schedule and exported PDFs.
+          {planId === 'new'
+            ? 'Give your custom practice a descriptive name (e.g., "Week 1 - Ball Handling")'
+            : 'Leave blank to use the default template name. Custom names appear in your schedule and exported PDFs.'
+          }
         </p>
       </div>
 
@@ -331,6 +357,13 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
       </div>
 
       <div className="drill-blocks">
+        {plan.drillBlocks.length === 0 ? (
+          <div className="empty-drill-blocks">
+            <div className="empty-icon">🏀</div>
+            <h3>No drills added yet</h3>
+            <p>Click "➕ Add Drill" above to start building your practice plan</p>
+          </div>
+        ) : null}
         {plan.drillBlocks.map((block, index) => {
           const drill = getDrillById(block.drillId);
           return (

@@ -31,6 +31,16 @@ const PlanLibrary = () => {
         <p className="page-subtitle">32 pre-loaded Breakthrough Basketball practice plans</p>
       </div>
 
+      <div className="create-custom-section">
+        <button
+          className="btn btn-primary create-custom-btn"
+          onClick={() => navigate('/plan/new')}
+        >
+          ✨ Create Custom Plan
+        </button>
+        <p className="create-hint">Build your own practice from scratch using the drill library</p>
+      </div>
+
       <div className="filters">
         <div className="filter-group">
           <label>Skill Level</label>

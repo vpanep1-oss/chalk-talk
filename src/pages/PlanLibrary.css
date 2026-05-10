@@ -2,6 +2,35 @@
   padding-bottom: calc(var(--spacing-xl) + 60px);
 }
 
+.create-custom-section {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.create-custom-btn {
+  width: 100%;
+  max-width: 300px;
+  font-size: 1.125rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: white;
+  color: var(--primary);
+  border: none;
+}
+
+.create-custom-btn:hover {
+  background: var(--surface-light);
+}
+
+.create-hint {
+  margin-top: var(--spacing-sm);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .filters {
   display: flex;
   gap: var(--spacing-md);
