@@ -198,8 +198,8 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = plan.drillBlocks.findIndex((_, idx) => idx === active.id);
-      const newIndex = plan.drillBlocks.findIndex((_, idx) => idx === over.id);
+      const oldIndex = active.id;
+      const newIndex = over.id;
 
       const updatedPlan = { ...plan };
       updatedPlan.drillBlocks = arrayMove(plan.drillBlocks, oldIndex, newIndex);
