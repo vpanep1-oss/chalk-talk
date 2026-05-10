@@ -35,6 +35,7 @@ const SortableDrillBlock = ({
   onRemove,
   isSwapping,
   drillRecommendation,
+  uniqueId,
 }) => {
   const {
     attributes,
@@ -43,7 +44,7 @@ const SortableDrillBlock = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: index });
+  } = useSortable({ id: uniqueId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -198,12 +199,16 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = active.id;
-      const newIndex = over.id;
+      // Extract index from uniqueId format: "drill-{index}-{drillId}"
+      const oldIndex = Number(active.id.split('-')[1]);
+      const newIndex = Number(over.id.split('-')[1]);
 
-      const updatedPlan = { ...plan };
-      updatedPlan.drillBlocks = arrayMove(plan.drillBlocks, oldIndex, newIndex);
-      setPlan(updatedPlan);
+      setPlan((currentPlan) => {
+        return {
+          ...currentPlan,
+          drillBlocks: arrayMove(currentPlan.drillBlocks, oldIndex, newIndex)
+        };
+      });
       setIsEditing(true);
     }
   };
@@ -490,14 +495,16 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
             </div>
           ) : (
             <SortableContext
-              items={plan.drillBlocks.map((_, index) => index)}
+              items={plan.drillBlocks.map((block, index) => `drill-${index}-${block.drillId}`)}
               strategy={verticalListSortingStrategy}
             >
               {plan.drillBlocks.map((block, index) => {
                 const drill = getDrillById(block.drillId);
+                const uniqueId = `drill-${index}-${block.drillId}`;
                 return (
                   <SortableDrillBlock
-                    key={index}
+                    key={uniqueId}
+                    uniqueId={uniqueId}
                     block={block}
                     index={index}
                     drill={drill}
