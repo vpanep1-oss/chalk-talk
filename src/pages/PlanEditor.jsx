@@ -6,8 +6,103 @@ import { savePracticeScheduleEntry, getPracticeHistory, getDrillEffectivenessMap
 import DrillSelectorModal from '../components/DrillSelectorModal';
 import DrillRecommendation from '../components/DrillRecommendation';
 import { exportPracticePlanToPDF } from '../utils/exportPDF';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import './PlanEditor.css';
 import './PlanEditor.print.css';
+
+// Sortable Drill Block Component
+const SortableDrillBlock = ({
+  block,
+  index,
+  drill,
+  onDurationChange,
+  onSwap,
+  onRemove,
+  isSwapping,
+  drillRecommendation,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: index });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="drill-block-card">
+      <div className="drill-block-header">
+        <div className="drag-handle" {...attributes} {...listeners}>
+          <span className="drag-icon">⋮⋮</span>
+        </div>
+        <div className="drill-info">
+          <h3 className="drill-name">
+            {index + 1}. {drill?.name || 'Unknown Drill'}
+          </h3>
+          <p className="drill-category">{drill?.category}</p>
+        </div>
+        <div className="drill-controls">
+          <div className="duration-input" data-duration={block.duration}>
+            <input
+              type="number"
+              min="1"
+              max="90"
+              value={block.duration}
+              onChange={(e) => onDurationChange(index, e.target.value)}
+            />
+            <span>min</span>
+          </div>
+          <button
+            className="swap-drill-btn"
+            onClick={() => onSwap(index)}
+            title="Swap drill"
+          >
+            🔄
+          </button>
+          <button
+            className="remove-drill-btn"
+            onClick={() => onRemove(index)}
+            title="Remove drill"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+      {drill?.description && (
+        <p className="drill-description">{drill.description}</p>
+      )}
+      {drill?.details && (
+        <details className="drill-details">
+          <summary>View Details</summary>
+          <p>{drill.details}</p>
+        </details>
+      )}
+      {drillRecommendation}
+    </div>
+  );
+};
 
 const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   const { planId } = useParams();
@@ -24,6 +119,17 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
     blockIndex: null,
     initialCategory: 'all'
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     if (planId) {
@@ -83,6 +189,20 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
     if (confirm('Remove this drill from the practice plan?')) {
       const updatedPlan = { ...plan };
       updatedPlan.drillBlocks.splice(blockIndex, 1);
+      setPlan(updatedPlan);
+      setIsEditing(true);
+    }
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = plan.drillBlocks.findIndex((_, idx) => idx === active.id);
+      const newIndex = plan.drillBlocks.findIndex((_, idx) => idx === over.id);
+
+      const updatedPlan = { ...plan };
+      updatedPlan.drillBlocks = arrayMove(plan.drillBlocks, oldIndex, newIndex);
       setPlan(updatedPlan);
       setIsEditing(true);
     }
@@ -356,85 +476,63 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         </button>
       </div>
 
-      <div className="drill-blocks">
-        {plan.drillBlocks.length === 0 ? (
-          <div className="empty-drill-blocks">
-            <div className="empty-icon">🏀</div>
-            <h3>No drills added yet</h3>
-            <p>Click "➕ Add Drill" above to start building your practice plan</p>
-          </div>
-        ) : null}
-        {plan.drillBlocks.map((block, index) => {
-          const drill = getDrillById(block.drillId);
-          return (
-            <div key={index} className="drill-block-card">
-              <div className="drill-block-header">
-                <div className="drill-info">
-                  <h3 className="drill-name">
-                    {index + 1}. {drill?.name || 'Unknown Drill'}
-                  </h3>
-                  <p className="drill-category">{drill?.category}</p>
-                </div>
-                <div className="drill-controls">
-                  <div className="duration-input" data-duration={block.duration}>
-                    <input
-                      type="number"
-                      min="1"
-                      max="90"
-                      value={block.duration}
-                      onChange={(e) => handleDurationChange(index, e.target.value)}
-                    />
-                    <span>min</span>
-                  </div>
-                  <button
-                    className="swap-drill-btn"
-                    onClick={() => handleSwapDrill(index)}
-                    title="Swap drill"
-                  >
-                    🔄
-                  </button>
-                  <button
-                    className="remove-drill-btn"
-                    onClick={() => handleRemoveDrill(index)}
-                    title="Remove drill"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              </div>
-              {drill?.description && (
-                <p className="drill-description">{drill.description}</p>
-              )}
-              {drill?.details && (
-                <details className="drill-details">
-                  <summary>View Details</summary>
-                  <p>{drill.details}</p>
-                </details>
-              )}
-              
-              {swappingBlockIndex === index && Object.keys(drillEffectiveness).length > 0 && (
-                <DrillRecommendation
-                  drillsData={getDrillsByCategory(drill?.category || 'all')
-                    .filter(d => d.id !== block.drillId)
-                    .map(d => ({
-                      drillId: d.id,
-                      effectiveness: drillEffectiveness[d.id] || null
-                    }))
-                    .sort((a, b) => (b.effectiveness || 0) - (a.effectiveness || 0))}
-                  currentDrillId={block.drillId}
-                  onSwap={(newDrillId) => {
-                    const updatedPlan = { ...plan };
-                    updatedPlan.drillBlocks[index].drillId = newDrillId;
-                    setPlan(updatedPlan);
-                    setIsEditing(true);
-                    setSwappingBlockIndex(null);
-                  }}
-                />
-              )}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="drill-blocks">
+          {plan.drillBlocks.length === 0 ? (
+            <div className="empty-drill-blocks">
+              <div className="empty-icon">🏀</div>
+              <h3>No drills added yet</h3>
+              <p>Click "➕ Add Drill" above to start building your practice plan</p>
             </div>
-          );
-        })}
-      </div>
+          ) : (
+            <SortableContext
+              items={plan.drillBlocks.map((_, index) => index)}
+              strategy={verticalListSortingStrategy}
+            >
+              {plan.drillBlocks.map((block, index) => {
+                const drill = getDrillById(block.drillId);
+                return (
+                  <SortableDrillBlock
+                    key={index}
+                    block={block}
+                    index={index}
+                    drill={drill}
+                    onDurationChange={handleDurationChange}
+                    onSwap={handleSwapDrill}
+                    onRemove={handleRemoveDrill}
+                    isSwapping={swappingBlockIndex === index}
+                    drillRecommendation={
+                      swappingBlockIndex === index && Object.keys(drillEffectiveness).length > 0 && (
+                        <DrillRecommendation
+                          drillsData={getDrillsByCategory(drill?.category || 'all')
+                            .filter(d => d.id !== block.drillId)
+                            .map(d => ({
+                              drillId: d.id,
+                              effectiveness: drillEffectiveness[d.id] || null
+                            }))
+                            .sort((a, b) => (b.effectiveness || 0) - (a.effectiveness || 0))}
+                          currentDrillId={block.drillId}
+                          onSwap={(newDrillId) => {
+                            const updatedPlan = { ...plan };
+                            updatedPlan.drillBlocks[index].drillId = newDrillId;
+                            setPlan(updatedPlan);
+                            setIsEditing(true);
+                            setSwappingBlockIndex(null);
+                          }}
+                        />
+                      )
+                    }
+                  />
+                );
+              })}
+            </SortableContext>
+          )}
+        </div>
+      </DndContext>
 
       <DrillSelectorModal
         isOpen={modalState.isOpen}
