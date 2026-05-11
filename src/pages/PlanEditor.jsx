@@ -149,18 +149,26 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         setCustomPlanName('');
         setIsEditing(true);
       } else {
-        // Load the original template plan
-        const originalPlan = getPracticePlanById(planId);
-
-        if (originalPlan) {
-          setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
-          setPracticeDate(currentPractice?.plan?.id === planId ? currentPractice.date : new Date().toISOString().split('T')[0]);
-          setCustomPlanName(''); // Reset custom name when loading a new plan
+        // Check if this is the current practice - if so, load the edited version
+        if (currentPractice?.plan?.id === planId) {
+          setPlan(JSON.parse(JSON.stringify(currentPractice.plan))); // Load the edited current practice
+          setPracticeDate(currentPractice.date);
+          setCustomPlanName('');
           setIsEditing(false);
+        } else {
+          // Load the original template plan
+          const originalPlan = getPracticePlanById(planId);
+
+          if (originalPlan) {
+            setPlan(JSON.parse(JSON.stringify(originalPlan))); // Deep clone the original
+            setPracticeDate(new Date().toISOString().split('T')[0]);
+            setCustomPlanName('');
+            setIsEditing(false);
+          }
         }
       }
     }
-  }, [planId]);
+  }, [planId, currentPractice]);
 
   // Load drill effectiveness data
   useEffect(() => {

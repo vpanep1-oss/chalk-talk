@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPracticePlanById } from '../data/practicePlans';
+import { getDrillById } from '../data/drillLibrary';
 import { getPracticeSchedule, subscribeToPracticeSchedule, deletePracticeScheduleEntry } from '../firebase/firestore';
+import { exportPracticePlanToPDF } from '../utils/exportPDF';
 import './PracticeSchedule.css';
 
 const PracticeSchedule = ({ teamCode }) => {
@@ -58,6 +60,26 @@ const PracticeSchedule = ({ teamCode }) => {
     navigate('/current');
   };
 
+  const handleDownloadPDF = (entry) => {
+    const plan = getPracticePlanById(entry.planId);
+    if (!plan) {
+      alert('Practice plan not found.');
+      return;
+    }
+
+    // Use the custom name from the schedule entry if it exists
+    const planWithDrills = {
+      ...plan,
+      name: entry.planName, // Use the scheduled name (which may be custom)
+      drillBlocks: plan.drillBlocks.map(block => ({
+        ...block,
+        drill: getDrillById(block.drillId)
+      }))
+    };
+
+    exportPracticePlanToPDF(planWithDrills, entry.date);
+  };
+
   return (
     <div className="page practice-schedule-page">
       <div className="page-header">
@@ -91,6 +113,9 @@ const PracticeSchedule = ({ teamCode }) => {
                 </button>
                 <button className="btn btn-secondary" onClick={() => handleLoadCurrent(entry)}>
                   Load Current
+                </button>
+                <button className="btn btn-outline" onClick={() => handleDownloadPDF(entry)}>
+                  📥 PDF
                 </button>
                 <button className="btn btn-outline" onClick={() => handleRemove(entry.id)}>
                   Remove

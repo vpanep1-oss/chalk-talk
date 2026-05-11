@@ -1,4 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { getDrillById } from '../data/drillLibrary';
+import { exportPracticePlanToPDF } from '../utils/exportPDF';
 import './CurrentPractice.css';
 
 const CurrentPractice = ({ currentPractice, clearCurrentPractice }) => {
@@ -8,6 +10,20 @@ const CurrentPractice = ({ currentPractice, clearCurrentPractice }) => {
   const formatPracticeDate = (dateString) => {
     if (!dateString) return 'No date set';
     return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const handleDownloadPDF = () => {
+    if (!currentPlan) return;
+
+    const planWithDrills = {
+      ...currentPlan,
+      drillBlocks: currentPlan.drillBlocks.map(block => ({
+        ...block,
+        drill: getDrillById(block.drillId)
+      }))
+    };
+
+    exportPracticePlanToPDF(planWithDrills, currentPractice.date);
   };
 
   return (
@@ -52,6 +68,9 @@ const CurrentPractice = ({ currentPractice, clearCurrentPractice }) => {
             </button>
             <button className="btn btn-secondary" onClick={() => navigate(`/plan/${currentPlan.id}`)}>
               ✏️ Edit Plan
+            </button>
+            <button className="btn btn-outline" onClick={handleDownloadPDF}>
+              📥 Download PDF
             </button>
             <button className="btn btn-outline" onClick={clearCurrentPractice}>
               ❌ Clear Current Practice
