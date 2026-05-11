@@ -248,13 +248,23 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
   };
 
   const handleSaveAsCurrentPractice = () => {
-    saveCurrentPractice({ plan, date: practiceDate });
+    const displayName = customPlanName.trim() || plan.name;
+    const planToSave = {
+      ...plan,
+      name: displayName
+    };
+    saveCurrentPractice({ plan: planToSave, date: practiceDate });
     setIsEditing(false);
-    alert(`Plan set as current practice for ${practiceDate}`);
+    alert(`"${displayName}" set as current practice for ${practiceDate}`);
   };
 
   const handleStartPractice = () => {
-    saveCurrentPractice({ plan, date: practiceDate });
+    const displayName = customPlanName.trim() || plan.name;
+    const planToSave = {
+      ...plan,
+      name: displayName
+    };
+    saveCurrentPractice({ plan: planToSave, date: practiceDate });
     navigate('/timer');
   };
 
