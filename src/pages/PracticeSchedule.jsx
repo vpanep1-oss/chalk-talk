@@ -51,7 +51,8 @@ const PracticeSchedule = ({ teamCode }) => {
   };
 
   const handleLoadCurrent = (entry) => {
-    const plan = getPracticePlanById(entry.planId);
+    // Use the modified plan from schedule if it exists, otherwise load the template
+    const plan = entry.modifiedPlan || getPracticePlanById(entry.planId);
     if (!plan) {
       alert('Practice plan not found.');
       return;
@@ -60,14 +61,26 @@ const PracticeSchedule = ({ teamCode }) => {
     navigate('/current');
   };
 
+  const handleEditPlan = (entry) => {
+    // Store the scheduled entry temporarily so PlanEditor can load it
+    if (entry.modifiedPlan) {
+      localStorage.setItem('tempScheduledPlan', JSON.stringify({
+        plan: entry.modifiedPlan,
+        date: entry.date
+      }));
+    }
+    navigate(`/plan/${entry.planId}`);
+  };
+
   const handleDownloadPDF = (entry) => {
-    const plan = getPracticePlanById(entry.planId);
+    // Use the modified plan from schedule if it exists, otherwise load the template
+    const plan = entry.modifiedPlan || getPracticePlanById(entry.planId);
     if (!plan) {
       alert('Practice plan not found.');
       return;
     }
 
-    // Use the custom name from the schedule entry if it exists
+    // Use the custom name from the schedule entry
     const planWithDrills = {
       ...plan,
       name: entry.planName, // Use the scheduled name (which may be custom)
@@ -108,7 +121,7 @@ const PracticeSchedule = ({ teamCode }) => {
               </div>
 
               <div className="schedule-actions">
-                <button className="btn btn-primary" onClick={() => navigate(`/plan/${entry.planId}`)}>
+                <button className="btn btn-primary" onClick={() => handleEditPlan(entry)}>
                   Edit Plan
                 </button>
                 <button className="btn btn-secondary" onClick={() => handleLoadCurrent(entry)}>

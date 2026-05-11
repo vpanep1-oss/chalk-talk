@@ -149,8 +149,17 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
         setCustomPlanName('');
         setIsEditing(true);
       } else {
-        // Check if this is the current practice - if so, load the edited version
-        if (currentPractice?.plan?.id === planId) {
+        // Check if there's a scheduled plan with modifications to load
+        const tempScheduled = localStorage.getItem('tempScheduledPlan');
+        if (tempScheduled) {
+          const scheduledData = JSON.parse(tempScheduled);
+          setPlan(JSON.parse(JSON.stringify(scheduledData.plan)));
+          setPracticeDate(scheduledData.date);
+          setCustomPlanName('');
+          setIsEditing(false);
+          localStorage.removeItem('tempScheduledPlan'); // Clean up
+        } else if (currentPractice?.plan?.id === planId) {
+          // Check if this is the current practice - if so, load the edited version
           setPlan(JSON.parse(JSON.stringify(currentPractice.plan))); // Load the edited current practice
           setPracticeDate(currentPractice.date);
           setCustomPlanName('');
@@ -270,13 +279,18 @@ const PlanEditor = ({ currentPractice, saveCurrentPractice, teamCode }) => {
 
   const handleSchedulePractice = async () => {
     const displayName = customPlanName.trim() || plan.name;
+    const planToSave = {
+      ...plan,
+      name: displayName
+    };
     const entry = {
       id: `${plan.id}_${practiceDate}`,
       planId: plan.id,
       planName: displayName,
       level: plan.level,
       duration: getTotalTime(),
-      date: practiceDate
+      date: practiceDate,
+      modifiedPlan: planToSave // Store the full modified plan
     };
 
     if (teamCode) {
