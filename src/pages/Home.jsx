@@ -114,6 +114,12 @@ const Home = ({ teamCode }) => {
           <p>Run your confirmed practice live</p>
         </Link>
 
+        <Link to="/history" className="action-card">
+          <div className="action-icon">📚</div>
+          <h3>Practice History</h3>
+          <p>View completed practices and your notes</p>
+        </Link>
+
         <Link to="/notes" className="action-card">
           <div className="action-icon">📝</div>
           <h3>Game & Practice Notes</h3>
