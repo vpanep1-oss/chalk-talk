@@ -21,8 +21,16 @@ const Navigation = () => {
         <span className="nav-label">Drills</span>
       </NavLink>
       <NavLink to="/timer" className="nav-item">
-        <span className="nav-icon">🏃</span>
-        <span className="nav-label">Live</span>
+        <span className="nav-icon">⏱️</span>
+        <span className="nav-label">Timer</span>
+      </NavLink>
+      <NavLink to="/history" className="nav-item">
+        <span className="nav-icon">📚</span>
+        <span className="nav-label">History</span>
+      </NavLink>
+      <NavLink to="/schedule" className="nav-item">
+        <span className="nav-icon">🗓️</span>
+        <span className="nav-label">Schedule</span>
       </NavLink>
       <NavLink to="/notes" className="nav-item">
         <span className="nav-icon">📝</span>
