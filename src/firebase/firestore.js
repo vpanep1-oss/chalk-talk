@@ -284,8 +284,8 @@ export const updateTeamSettings = async (teamCode, settings) => {
 export const savePracticeSession = async (teamCode, session) => {
   if (!teamCode) return;
 
-  const sessionId = `session_${Date.now()}`;
-  const sessionRef = doc(db, 'teams', teamCode, 'practiceHistory', sessionId);
+  // Use the session ID from the session object, not a new one
+  const sessionRef = doc(db, 'teams', teamCode, 'practiceHistory', session.id);
 
   await setDoc(sessionRef, {
     ...session,
