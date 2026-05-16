@@ -50,9 +50,22 @@ const PracticeHistory = ({ teamCode }) => {
                   <span>{formatDate(session.date || session.completedAt)}</span>
                 </div>
               </div>
+
+              {session.rating && (
+                <div className="history-rating">
+                  <strong>Rating:</strong> {'⭐'.repeat(session.rating)}
+                </div>
+              )}
+
               {session.note && (
                 <div className="history-note">
-                  <strong>Note:</strong> {session.note}
+                  <strong>Quick Note:</strong> {session.note}
+                </div>
+              )}
+
+              {session.feedback && session.feedback !== session.note && (
+                <div className="history-feedback">
+                  <strong>What worked / What to improve:</strong> {session.feedback}
                 </div>
               )}
             </div>

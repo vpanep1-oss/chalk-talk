@@ -19,7 +19,43 @@
   min-width: 120px;
   text-align: right;
 }
+.history-rating {
+  margin-top: 12px;
+  font-size: 1.125rem;
+}
+
+.history-rating strong {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
 .history-note {
   margin-top: 12px;
+  padding: 12px;
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
   color: var(--text-secondary);
+}
+
+.history-note strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.history-feedback {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--surface-light);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+.history-feedback strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
 }
