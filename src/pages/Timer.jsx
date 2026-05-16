@@ -16,7 +16,7 @@ const Timer = ({ currentPractice, teamCode }) => {
   const [sessionSaved, setSessionSaved] = useState(false);
   const [completionNote, setCompletionNote] = useState('');
   const [sessionSaving, setSessionSaving] = useState(false);
-  const [sessionId] = useState(`session_${Date.now()}`);
+  const [sessionId, setSessionId] = useState(`session_${Date.now()}`);
   const [sessionRating, setSessionRating] = useState(null);
   const [sessionFeedback, setSessionFeedback] = useState('');
   const [expandedDrill, setExpandedDrill] = useState(null);
@@ -31,6 +31,7 @@ const Timer = ({ currentPractice, teamCode }) => {
 
   useEffect(() => {
     if (currentPlan && currentPlan.drillBlocks.length > 0) {
+      setSessionId(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`); // Generate unique ID
       setCurrentDrillIndex(0);
       setTotalElapsed(0);
       setTimeRemaining(currentPlan.drillBlocks[0].duration * 60);
@@ -39,6 +40,8 @@ const Timer = ({ currentPractice, teamCode }) => {
       setSessionSaved(false);
       setCompletionNote('');
       setSessionSaving(false);
+      setSessionRating(null);
+      setSessionFeedback('');
       setPracticeDrills(currentPlan.drillBlocks.map((block, idx) => ({
         index: idx,
         drillId: block.drillId,
