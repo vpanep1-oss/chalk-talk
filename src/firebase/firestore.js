@@ -312,6 +312,19 @@ export const getPracticeHistory = async (teamCode, limit = 20) => {
   }));
 };
 
+/**
+ * Delete a practice session
+ * @param {string} teamCode - Team code
+ * @param {string} sessionId - Session ID to delete
+ * @returns {Promise<void>}
+ */
+export const deletePracticeSession = async (teamCode, sessionId) => {
+  if (!teamCode || !sessionId) return;
+
+  const sessionRef = doc(db, 'teams', teamCode, 'practiceHistory', sessionId);
+  await deleteDoc(sessionRef);
+};
+
 // ==========================================
 // DRILL RATINGS
 // ==========================================

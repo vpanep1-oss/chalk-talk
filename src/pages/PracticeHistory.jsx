@@ -1,23 +1,45 @@
 import { useState, useEffect } from 'react';
-import { getPracticeHistory } from '../firebase/firestore';
+import { getPracticeHistory, deletePracticeSession } from '../firebase/firestore';
 import './PracticeHistory.css';
 
 const PracticeHistory = ({ teamCode }) => {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    const loadHistory = async () => {
-      if (teamCode) {
-        const sessions = await getPracticeHistory(teamCode, 50);
-        setHistory(sessions);
-      } else {
-        const savedHistory = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
-        setHistory(savedHistory);
-      }
-    };
-
     loadHistory();
   }, [teamCode]);
+
+  const loadHistory = async () => {
+    if (teamCode) {
+      const sessions = await getPracticeHistory(teamCode, 50);
+      setHistory(sessions);
+    } else {
+      const savedHistory = JSON.parse(localStorage.getItem('practiceHistory') || '[]');
+      setHistory(savedHistory);
+    }
+  };
+
+  const handleDelete = async (sessionId) => {
+    if (!confirm('Delete this practice session? This cannot be undone.')) {
+      return;
+    }
+
+    try {
+      if (teamCode) {
+        await deletePracticeSession(teamCode, sessionId);
+      } else {
+        const updatedHistory = history.filter(session => session.id !== sessionId);
+        localStorage.setItem('practiceHistory', JSON.stringify(updatedHistory));
+        setHistory(updatedHistory);
+      }
+
+      // Reload history to reflect changes
+      await loadHistory();
+    } catch (error) {
+      console.error('Error deleting session:', error);
+      alert('Unable to delete practice session. Please try again.');
+    }
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Unknown date';
@@ -46,8 +68,15 @@ const PracticeHistory = ({ teamCode }) => {
                   <h3>{session.planName}</h3>
                   <p className="text-muted">{session.totalDrills || session.drills?.length} drills • {session.durationMinutes} min</p>
                 </div>
-                <div className="history-date">
-                  <span>{formatDate(session.date || session.completedAt)}</span>
+                <div className="history-actions">
+                  <span className="history-date">{formatDate(session.date || session.completedAt)}</span>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(session.id)}
+                    title="Delete this practice session"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
 
